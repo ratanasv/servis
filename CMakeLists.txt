@@ -3,6 +3,8 @@ project(servis)
 set(CMAKE_CXX_COMPILER "clang++")
 set(CMAKE_C_COMPILER "clang")
 
+add_subdirectory(test)
+
 file(GLOB SOURCES *.cpp)
 add_executable(servis ${SOURCES})
 
