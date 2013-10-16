@@ -4,9 +4,10 @@ add_executable(test ${SOURCES})
 
 include_directories(${PROJECT_SOURCE_DIR}/dependencies_h)
 include_directories(${PROJECT_SOURCE_DIR}/dependencies_h/gen-cpp)
+include_directories(${PROJECT_SOURCE_DIR}/../scidb-vistas/VISTAS\ Core/include)
 if (MSVC)
     include_directories(${PROJECT_SOURCE_DIR}/../cppunit-1.12.1/include)
-    include_directories(${PROJECT_SOURCE_DIR}/../thrift-0.9.0)
+    include_directories(${PROJECT_SOURCE_DIR}/../thrift-0.9.0/include)
 endif (MSVC)
 
 
