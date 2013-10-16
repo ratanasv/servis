@@ -6,7 +6,6 @@ CPPUNIT_TEST_SUITE_REGISTRATION( SimpleTestCase );
 
 void SimpleTestCase::testOne()
 {
-	double result = m_value1 + m_value2;
-	CPPUNIT_ASSERT( result == 6.0 );
+	CPPUNIT_ASSERT( 6.0 == 6.0 );
 }
 
