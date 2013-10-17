@@ -17,28 +17,28 @@ using boost::shared_ptr;
 using namespace  ::servis;
 
 class VISTASHandler : virtual public VISTASIf {
- public:
-  VISTASHandler() {
-    // Your initialization goes here
-  }
+public:
+	VISTASHandler() {
+		// Your initialization goes here
+	}
 
-  void getTerrain(Terrain& _return, const std::string& fileName) {
-    // Your implementation goes here
-    printf("getTerrain\n");
-  }
+	void getTerrain(Terrain& _return, const std::string& fileName) {
+		// Your implementation goes here
+		printf("getTerrain\n");
+	}
 
 };
 
 int main(int argc, char **argv) {
-  int port = 9090;
-  shared_ptr<VISTASHandler> handler(new VISTASHandler());
-  shared_ptr<TProcessor> processor(new VISTASProcessor(handler));
-  shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
-  shared_ptr<TTransportFactory> transportFactory(new TFramedTransportFactory());
-  shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
+	int port = 9090;
+	shared_ptr<VISTASHandler> handler(new VISTASHandler());
+	shared_ptr<TProcessor> processor(new VISTASProcessor(handler));
+	shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
+	shared_ptr<TTransportFactory> transportFactory(new TFramedTransportFactory());
+	shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
-  TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);
-  server.serve();
-  return 0;
+	TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);
+	server.serve();
+	return 0;
 }
 

@@ -2,14 +2,6 @@ file(GLOB SOURCES *.cpp)
 
 add_executable(test ${SOURCES})
 
-include_directories(${PROJECT_SOURCE_DIR}/dependencies_h)
-include_directories(${PROJECT_SOURCE_DIR}/dependencies_h/gen-cpp)
-include_directories(${PROJECT_SOURCE_DIR}/../scidb-vistas/VISTAS\ Core/include)
-if (MSVC)
-    include_directories(${PROJECT_SOURCE_DIR}/../cppunit-1.12.1/include)
-    include_directories(${PROJECT_SOURCE_DIR}/../thrift-0.9.0/include)
-endif (MSVC)
-
-
 target_link_libraries(test libcppunit.a)
+target_link_libraries(test ${PROJECT_SOURCE_DIR}/../vbin/VISTAS\ Core/libCORE.a)
 
