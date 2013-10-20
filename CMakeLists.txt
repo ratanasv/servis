@@ -26,7 +26,7 @@ endif (APPLE)
 
 add_subdirectory(test)
 
-file(GLOB SOURCES *.cpp)
+file(GLOB SOURCES *.cpp *.h)
 add_executable(servis ${SOURCES})
 
 #find_package(Threads REQUIRED)
