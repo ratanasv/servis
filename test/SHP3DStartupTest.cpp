@@ -1,18 +1,16 @@
 #include <cppunit/config/SourcePrefix.h>
-#include "SimpleTestCase.h"
+#include "SHP3DStartupTest.h"
 #include <vistas/vistas.h>
 #include <boost/tr1/memory.hpp>
+#include <SHP3D.h>
 
 using std::tr1::shared_ptr;
 
-CPPUNIT_TEST_SUITE_REGISTRATION( SimpleTestCase );
+CPPUNIT_TEST_SUITE_REGISTRATION( SHP3DStartupTest );
 
 
-void SimpleTestCase::testOne()
+void SHP3DStartupTest::testAll()
 {
-	VI_Path p("../bin/asdf");
-	CPPUNIT_ASSERT(false == p.IsAbsolute());
-	CPPUNIT_ASSERT(false == p.Exists());
-    CPPUNIT_ASSERT(1 == 1);
+    shared_ptr<SHP3D> shp3dPlugin(new SHP3D());
 }
 

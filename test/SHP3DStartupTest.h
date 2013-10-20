@@ -7,12 +7,12 @@
 *
 */
 
-class SimpleTestCase : public CPPUNIT_NS::TestFixture
+class SHP3DStartupTest : public CPPUNIT_NS::TestFixture
 {
-	CPPUNIT_TEST_SUITE( SimpleTestCase );
-	CPPUNIT_TEST( testOne );
+	CPPUNIT_TEST_SUITE( SHP3DStartupTest );
+	CPPUNIT_TEST( testAll );
 	CPPUNIT_TEST_SUITE_END();
 
 protected:
-	void testOne();
+	void testAll();
 };
