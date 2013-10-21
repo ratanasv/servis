@@ -4,3 +4,13 @@ compiler:
 - clang
 
 script: mkdir build && cd build && cmake ../ && make
+
+notifications:
+  email: 
+    on_success:never
+    on_failure:never
+  irc:
+    channels:
+      - "chat.freenode.net#vistas-server"
+    template:
+      - "%{repository}/%{branch} (%{commit} - %{author}): %{message}"
