@@ -11,6 +11,6 @@ notifications:
     on_failure:never
   irc:
     channels:
-      - "chat.freenode.net#vistas-server"
+      - "chat.freenode.net#scidb-vistas"
     template:
       - "%{repository}/%{branch} (%{commit} - %{author}): %{message}"
