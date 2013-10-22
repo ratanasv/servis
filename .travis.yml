@@ -1,6 +1,14 @@
 language: cpp
 compiler:
-  - gcc
-    - clang
-    # Change this to your needs
-    # script: ./configure && make
+- gcc
+- clang
+
+script: mkdir build && cd build && cmake ../ && make
+
+notifications:
+  email: false
+  irc:
+    channels:
+      - "chat.freenode.net#scidb-vistas"
+    template:
+      - "%{repository}/%{branch} (%{commit} - %{author}): %{message}"
