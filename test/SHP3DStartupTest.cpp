@@ -18,6 +18,11 @@ void SHP3DStartupTest::testAll()
     CPPUNIT_ASSERT(pathToShp.Exists());
     envisionPlugin->Set(pathToShp);
     CPPUNIT_ASSERT_EQUAL(8616, envisionPlugin->GetNumShapes());
-    
+    shp3dPlugin->SetData(envisionPlugin.get(), 0);
+    auto attributeList = envisionPlugin->GetAttributes();
+    for (auto it : attributeList) {
+        fprintf(stderr, "%s\n", it.c_str());
+    }
 }
+
 
