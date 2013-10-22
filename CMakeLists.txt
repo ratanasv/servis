@@ -5,6 +5,9 @@ set(VISTAS_SOURCE_DIR ${PROJECT_SOURCE_DIR}/../scidb-vistas)
 
 include_directories(${PROJECT_SOURCE_DIR}/dependencies_h)
 include_directories(${PROJECT_SOURCE_DIR}/dependencies_h/gen-cpp)
+include_directories(/usr/local/include /usr/include)
+link_directories(/usr/local/lib /usr/lib)
+
 
 if (MSVC)
     include_directories(${PROJECT_SOURCE_DIR}/../cppunit-1.12.1/include)
@@ -26,7 +29,7 @@ add_subdirectory(test)
 file(GLOB SOURCES *.cpp *.h)
 add_executable(servis ${SOURCES})
 
-#find_package(Threads REQUIRED)
+find_package(Threads REQUIRED)
 
 target_link_libraries(servis ${CMAKE_THREAD_LIBS_INIT})
 target_link_libraries(servis thrift)
