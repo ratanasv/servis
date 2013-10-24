@@ -10,7 +10,12 @@ using std::tr1::shared_ptr;
 using std::vector;
 
 CPPUNIT_TEST_SUITE_REGISTRATION( SHP3DStartupTest );
+#ifdef MACOSX
 const VI_String DATA_PREFIX = VI_String("/Users/ratanasv/Documents/data/");
+#else
+const VI_String DATA_PREFIX = VI_String("/home/ubuntu/data/");
+#endif
+
 
 void SHP3DStartupTest::testAll()
 {

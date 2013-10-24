@@ -13,6 +13,12 @@
 #include <vector>
 #include <stdexcept>
 
+#ifdef MACOSX
+const VI_String DATA_PREFIX = VI_String("/Users/ratanasv/Documents/data/");
+#else
+const VI_String DATA_PREFIX = VI_String("/home/ubuntu/data/");
+#endif
+
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
@@ -21,7 +27,6 @@ using namespace ::apache::thrift::server;
 using std::tr1::shared_ptr;
 
 using namespace  ::servis;
-const VI_String DATA_PREFIX = VI_String("/Users/ratanasv/Documents/data/");
 class VISTASHandler : virtual public VISTASIf {
 public:
 	VISTASHandler() {
@@ -40,7 +45,7 @@ public:
 		auto shapeMesh = shp3dPlugin->GetMesh();
 		auto vertexCount = shapeMesh.GetVertexCount();
 		auto indexCount = shapeMesh.GetIndexCount();
-		
+
 		_return.vertices.reserve(vertexCount);
 		float* vertexPtr = shapeMesh.AcquireVertexArray();
 		for (int i=0; i<vertexCount; i++) {
@@ -67,7 +72,11 @@ int main(int argc, char **argv) {
 	shared_ptr<VISTASHandler> handler(new VISTASHandler());
 	shared_ptr<TProcessor> processor(new VISTASProcessor(handler));
 	shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
+#ifdef MACOSX
 	shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
+#else
+	shared_ptr<TTransportFactory> transportFactory(new TFramedTransportFactory());
+#endif
 	shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
 	TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);

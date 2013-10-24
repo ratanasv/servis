@@ -9,10 +9,9 @@ include_directories(/usr/local/include /usr/include)
 link_directories(/usr/local/lib /usr/lib)
 
 
-if (MSVC)
-    include_directories(${PROJECT_SOURCE_DIR}/../cppunit-1.12.1/include)
-    include_directories(${PROJECT_SOURCE_DIR}/../thrift-0.9.0/include)
-endif (MSVC)
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    add_definitions(-DMACOSX)
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 
 set(CMAKE_CXX_COMPILER "clang++")
