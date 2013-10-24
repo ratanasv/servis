@@ -6,16 +6,22 @@
 #include <thrift/server/TSimpleServer.h>
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TBufferTransports.h>
+#include <boost/tr1/memory.hpp>
+#include <vistas/vistas.h>
+#include <SHP3D.h>
+#include <Envision.h>
+#include <vector>
+#include <stdexcept>
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
 using namespace ::apache::thrift::server;
 
-using boost::shared_ptr;
+using std::tr1::shared_ptr;
 
 using namespace  ::servis;
-
+const VI_String DATA_PREFIX = VI_String("/Users/ratanasv/Documents/data/");
 class VISTASHandler : virtual public VISTASIf {
 public:
 	VISTASHandler() {
@@ -25,6 +31,33 @@ public:
 	void getTerrain(Terrain& _return, const std::string& fileName) {
 		// Your implementation goes here
 		printf("getTerrain\n");
+		shared_ptr<SHP3D> shp3dPlugin(new SHP3D());
+		shared_ptr<EnvisionDataPlugin> envisionPlugin(new EnvisionDataPlugin());
+		const VI_Path pathToShp = VI_Path(DATA_PREFIX + VI_String("eastern_oregon/idu3D.shp"));
+		envisionPlugin->Set(pathToShp);
+		shp3dPlugin->SetData(envisionPlugin.get(), 0);
+		shp3dPlugin->SetAttribute(VI_String("LULC_A"));
+		auto shapeMesh = shp3dPlugin->GetMesh();
+		auto vertexCount = shapeMesh.GetVertexCount();
+		auto indexCount = shapeMesh.GetIndexCount();
+		
+		_return.vertices.reserve(vertexCount);
+		float* vertexPtr = shapeMesh.AcquireVertexArray();
+		for (int i=0; i<vertexCount; i++) {
+			double x = (double)vertexPtr[3*i+0];
+			double y = (double)vertexPtr[3*i+1];
+			double z = (double)vertexPtr[3*i+2];
+			_return.vertices.push_back(V3(x,y,z));
+		}
+		shapeMesh.ReleaseVertexArray();
+
+
+		_return.indices.reserve(indexCount);
+		unsigned* indexPtr = shapeMesh.AcquireIndexArray();
+		for (int i=0; i<indexCount; i++) {
+			_return.indices.push_back((int32_t) indexPtr[i]);
+		}
+		shapeMesh.ReleaseIndexArray();
 	}
 
 };
@@ -34,7 +67,7 @@ int main(int argc, char **argv) {
 	shared_ptr<VISTASHandler> handler(new VISTASHandler());
 	shared_ptr<TProcessor> processor(new VISTASProcessor(handler));
 	shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
-	shared_ptr<TTransportFactory> transportFactory(new TFramedTransportFactory());
+	shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
 	shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
 	TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);

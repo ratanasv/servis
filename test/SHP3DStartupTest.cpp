@@ -4,8 +4,10 @@
 #include <boost/tr1/memory.hpp>
 #include <SHP3D.h>
 #include <Envision.h>
+#include <vector>
 
 using std::tr1::shared_ptr;
+using std::vector;
 
 CPPUNIT_TEST_SUITE_REGISTRATION( SHP3DStartupTest );
 const VI_String DATA_PREFIX = VI_String("/Users/ratanasv/Documents/data/");
@@ -19,10 +21,10 @@ void SHP3DStartupTest::testAll()
     envisionPlugin->Set(pathToShp);
     CPPUNIT_ASSERT_EQUAL(8616, envisionPlugin->GetNumShapes());
     shp3dPlugin->SetData(envisionPlugin.get(), 0);
-    auto attributeList = envisionPlugin->GetAttributes();
-    for (auto it : attributeList) {
-        fprintf(stderr, "%s\n", it.c_str());
-    }
+    shp3dPlugin->SetAttribute(VI_String("LULC_A"));
+	auto shapeMesh = shp3dPlugin->GetMesh();
+	CPPUNIT_ASSERT_EQUAL((unsigned)64755, shapeMesh.GetVertexCount());
+	CPPUNIT_ASSERT_EQUAL((unsigned)142563, shapeMesh.GetIndexCount());
 }
 
 

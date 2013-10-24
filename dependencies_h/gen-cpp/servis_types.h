@@ -29,7 +29,7 @@ class V3 {
   static const char* ascii_fingerprint; // = "EFFAD640FBA2CA56C50155B2A4545897";
   static const uint8_t binary_fingerprint[16]; // = {0xEF,0xFA,0xD6,0x40,0xFB,0xA2,0xCA,0x56,0xC5,0x01,0x55,0xB2,0xA4,0x54,0x58,0x97};
 
-  V3() : x(0), y(0), z(0) {
+  V3(double a=0, double b=0, double c=0) : x(a), y(b), z(c) {
   }
 
   virtual ~V3() throw() {}
