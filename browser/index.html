@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>VISTAS WebGL</title>
+
+    </head>
+    <body>
+        <div id="container"></div>
+        <script src=http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>>
+        <script src="js/three.min.js"></script>
+        <script src="js/libs/stats.min.js"></script>
+        <script>
+            var servisHost = 'http://54.200.144.27:8888';
+            var container, stats;
+            var camera, scene, renderer;
+            var mesh, geometry;
+            var data;
+
+            getData();
+            animate();
+
+            function getData() {
+                $.ajax({
+                    url: servisHost,
+                    dataType: 'jsonp',
+                    success: function(res) {
+                        data = res;
+                        init();
+                    }
+                });
+            }
+
+            function GeometryAttributes() {
+                this.index = {
+                    itemSize: 1,
+                    array: data.indices
+                };
+                this.position = {
+                    itemSize: 3,
+                    array: data.vertices
+                };
+            }
+
+            function init() {
+                camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 1, 3000);
+                camera.position.z = 1000;
+
+                geometry = new THREE.BufferGeometry();
+                geometry.attributes = new GeometryAttributes();
+
+                scene = new THREE.Scene();
+                mesh = new THREE.Mesh(geometry);
+                scene.add(mesh);
+
+                renderer = new THREE.WebGLRenderer({
+                        antialias: true
+                });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                container = document.getElementById('container')
+                container.appendChild(renderer.domElement);
+                
+                stats = new Stats();
+                stats.domElement.style.position = 'absolute';
+                stats.domElement.style.top = '0px';
+                container.appendChild(stats.domElement);
+            }
+
+            function animate() {
+                requestAnimationFrame(animate);
+                render();
+                stats.update();
+            }
+
+            function render() {
+                renderer.render(scene, camera);
+            }
+        </script>
+    </body>
+</html>
