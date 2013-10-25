@@ -6,18 +6,19 @@
     </head>
     <body>
         <div id="container"></div>
-        <script src=http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>>
-        <script src="js/three.min.js"></script>
-        <script src="js/libs/stats.min.js"></script>
+        <script src=http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js></script>>
+        <script src="http://web.engr.oregonstate.edu/~ratanasv/threejs/build/three.min.js"></script>
+        <script src="http://web.engr.oregonstate.edu/~ratanasv/threejs/examples/js/libs/stats.min.js"></script>
+        <script src="http://web.engr.oregonstate.edu/~ratanasv/threejs/examples/js/controls/TrackballControls.js"></script>
+        <script src="https://github.com/benvanik/WebGL-Inspector/blob/master/core/embed.js"></script>
         <script>
             var servisHost = 'http://54.200.144.27:8888';
             var container, stats;
-            var camera, scene, renderer;
+            var camera, scene, renderer, controls;
             var mesh, geometry;
             var data;
 
             getData();
-            animate();
 
             function getData() {
                 $.ajax({
@@ -26,31 +27,60 @@
                     success: function(res) {
                         data = res;
                         init();
+                        animate();
                     }
                 });
             }
 
-            function GeometryAttributes() {
-                this.index = {
-                    itemSize: 1,
-                    array: data.indices
-                };
-                this.position = {
-                    itemSize: 3,
-                    array: data.vertices
-                };
+            function addGeometryAttributes(geometry) {
+                var pos, indices;
+                geometry.addAttribute('index', Uint32Array, 3, 1);
+                geometry.addAttribute('position', Float32Array, 3, 3);
+                ind = geometry.attributes.index.array;
+                pos = geometry.attributes.position.array;
+                /*for (var i=0; i<data.indices.length; i++) {
+                    ind[i] = data.indices[i];
+                }
+                for (var i=0; i<data.vertices.length; i++) {
+                    pos[3*i+0] = data.vertices[i].x;
+                    pos[3*i+1] = data.vertices[i].y;
+                    pos[3*i+2] = data.vertices[i].z;
+                }*/
+                ind[0] = 0; ind[1] = 1; ind[2] = 2;
+                pos[0] = 10.0; pos[1] = -10.0; pos[2] = 0.0;
+                pos[3] = 0.0; pos[4] = 10.0; pos[5] = 0.0;
+                pos[6] = -10.0; pos[7]= -10.0; pos[8] = 0.0;
+                geometry.offsets = [];
+                geometry.offsets.push({
+                    start: 0,
+                    index: 0,
+                    count: 3
+                });
+            }
+
+            function addLighting(scene) {
+                var light0 = new THREE.PointLight(0xff0040, 1.0, 0.0);
+                scene.add(light0);
+                light0.position.x = 0.0;
+                light0.position.y = 500.0;
+                light0.position.z = 0.0;
             }
 
             function init() {
-                camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 1, 3000);
-                camera.position.z = 1000;
+                camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 1, 3000);
+                camera.position.z = 50;
+                controls = new THREE.TrackballControls(camera);
 
                 geometry = new THREE.BufferGeometry();
-                geometry.attributes = new GeometryAttributes();
+                addGeometryAttributes(geometry);
+                geometry.computeBoundingSphere();
 
                 scene = new THREE.Scene();
-                mesh = new THREE.Mesh(geometry);
+                mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
+                            color: 0xf47321,
+                            side: THREE.DoubleSide}));
                 scene.add(mesh);
+                //addLighting(scene);
 
                 renderer = new THREE.WebGLRenderer({
                         antialias: true
@@ -67,6 +97,7 @@
 
             function animate() {
                 requestAnimationFrame(animate);
+                controls.update();
                 render();
                 stats.update();
             }
