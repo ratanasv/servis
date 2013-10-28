@@ -51,6 +51,9 @@ function jsonpHandler(req, res) {
     case 'getAttributes':
         client.getAttriutes(queryString.fileName, onThriftCallBack);
         break;
+    case 'getDatasets':
+        client.getDatasets(onThriftCallBack);
+        break;
     }
 }
 

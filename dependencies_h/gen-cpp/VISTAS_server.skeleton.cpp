@@ -47,6 +47,11 @@ class VISTASHandler : virtual public VISTASIf {
     printf("getAttributes\n");
   }
 
+  void getDatasets(std::vector<std::string> & _return) {
+    // Your implementation goes here
+    printf("getDatasets\n");
+  }
+
 };
 
 int main(int argc, char **argv) {

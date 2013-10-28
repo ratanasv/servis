@@ -22,4 +22,5 @@ service VISTAS {
 	Texture getNormalMap(1:string fileName)
 	Texture getTextureMap(1:string fileName, 2:string attribute)
 	list<string> getAttributes(1:string fileName)
+	list<string> getDatasets()
 }

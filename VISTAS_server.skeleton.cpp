@@ -35,7 +35,7 @@ public:
 
 	virtual void getTerrain(Terrain& _return, const std::string& fileName) {
 		// Your implementation goes here
-		printf("getTerrain\n");
+		printf("getTerrain\n %s", fileName.c_str());
 		shared_ptr<SHP3D> shp3dPlugin(new SHP3D());
 		shared_ptr<EnvisionDataPlugin> envisionPlugin(new EnvisionDataPlugin());
 		const VI_Path pathToShp = VI_Path(DATA_PREFIX + VI_String("eastern_oregon/idu3D.shp"));
@@ -67,22 +67,31 @@ public:
 
 	virtual void getColor(std::vector<V3> & _return, const std::string& fileName, const std::string& attribute) {
 		// Your implementation goes here
-		printf("getColor\n");
+		printf("getColor\n %s %s", fileName.c_str(), attribute.c_str());
 	}
 
 	virtual void getNormalMap(Texture& _return, const std::string& fileName) {
 		// Your implementation goes here
-		printf("getNormalMap\n");
+		printf("getNormalMap\n %s", fileName.c_str());
 	}
 
 	virtual void getTextureMap(Texture& _return, const std::string& fileName, const std::string& attribute) {
 		// Your implementation goes here
-		printf("getTextureMap\n");
+		printf("getTextureMap\n %s %s", fileName.c_str(), attribute.c_str());
 	}
 
 	virtual void getAttributes(std::vector<std::string> & _return, const std::string& fileName) {
+		printf("getAttributes %s \n", fileName.c_str());
+		shared_ptr<EnvisionDataPlugin> envisionPlugin(new EnvisionDataPlugin());
+		const VI_Path pathToShp = VI_Path(DATA_PREFIX + VI_String(fileName));
+		envisionPlugin->Set(pathToShp);
+		auto attributeList = envisionPlugin->GetAttributes();
+		_return.insert(_return.begin(), attributeList.begin(), attributeList.end());
+	}
+
+	virtual void getDatasets(std::vector<std::string> & _return) {
 		// Your implementation goes here
-		printf("getAttributes\n");
+		printf("getDatasets\n");
 	}
 
 };

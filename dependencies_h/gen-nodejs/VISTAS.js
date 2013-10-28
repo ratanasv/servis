@@ -612,6 +612,109 @@ VISTAS_getAttributes_result.prototype.write = function(output) {
   return;
 };
 
+VISTAS_getDatasets_args = function(args) {
+};
+VISTAS_getDatasets_args.prototype = {};
+VISTAS_getDatasets_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    input.skip(ftype);
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+VISTAS_getDatasets_args.prototype.write = function(output) {
+  output.writeStructBegin('VISTAS_getDatasets_args');
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+VISTAS_getDatasets_result = function(args) {
+  this.success = null;
+  if (args) {
+    if (args.success !== undefined) {
+      this.success = args.success;
+    }
+  }
+};
+VISTAS_getDatasets_result.prototype = {};
+VISTAS_getDatasets_result.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+      if (ftype == Thrift.Type.LIST) {
+        var _size48 = 0;
+        var _rtmp352;
+        this.success = [];
+        var _etype51 = 0;
+        _rtmp352 = input.readListBegin();
+        _etype51 = _rtmp352.etype;
+        _size48 = _rtmp352.size;
+        for (var _i53 = 0; _i53 < _size48; ++_i53)
+        {
+          var elem54 = null;
+          elem54 = input.readString();
+          this.success.push(elem54);
+        }
+        input.readListEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+VISTAS_getDatasets_result.prototype.write = function(output) {
+  output.writeStructBegin('VISTAS_getDatasets_result');
+  if (this.success !== null && this.success !== undefined) {
+    output.writeFieldBegin('success', Thrift.Type.LIST, 0);
+    output.writeListBegin(Thrift.Type.STRING, this.success.length);
+    for (var iter55 in this.success)
+    {
+      if (this.success.hasOwnProperty(iter55))
+      {
+        iter55 = this.success[iter55];
+        output.writeString(iter55);
+      }
+    }
+    output.writeListEnd();
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
 VISTASClient = exports.Client = function(output, pClass) {
     this.output = output;
     this.pClass = pClass;
@@ -791,6 +894,39 @@ VISTASClient.prototype.recv_getAttributes = function(input,mtype,rseqid) {
   }
   return callback('getAttributes failed: unknown result');
 };
+VISTASClient.prototype.getDatasets = function(callback) {
+  this.seqid += 1;
+  this._reqs[this.seqid] = callback;
+  this.send_getDatasets();
+};
+
+VISTASClient.prototype.send_getDatasets = function() {
+  var output = new this.pClass(this.output);
+  output.writeMessageBegin('getDatasets', Thrift.MessageType.CALL, this.seqid);
+  var args = new VISTAS_getDatasets_args();
+  args.write(output);
+  output.writeMessageEnd();
+  return this.output.flush();
+};
+
+VISTASClient.prototype.recv_getDatasets = function(input,mtype,rseqid) {
+  var callback = this._reqs[rseqid] || function() {};
+  delete this._reqs[rseqid];
+  if (mtype == Thrift.MessageType.EXCEPTION) {
+    var x = new Thrift.TApplicationException();
+    x.read(input);
+    input.readMessageEnd();
+    return callback(x);
+  }
+  var result = new VISTAS_getDatasets_result();
+  result.read(input);
+  input.readMessageEnd();
+
+  if (null !== result.success) {
+    return callback(null, result.success);
+  }
+  return callback('getDatasets failed: unknown result');
+};
 VISTASProcessor = exports.Processor = function(handler) {
   this._handler = handler
 }
@@ -868,6 +1004,19 @@ VISTASProcessor.prototype.process_getAttributes = function(seqid, input, output)
   this._handler.getAttributes(args.fileName, function (err, result) {
     var result = new VISTAS_getAttributes_result((err != null ? err : {success: result}));
     output.writeMessageBegin("getAttributes", Thrift.MessageType.REPLY, seqid);
+    result.write(output);
+    output.writeMessageEnd();
+    output.flush();
+  })
+}
+
+VISTASProcessor.prototype.process_getDatasets = function(seqid, input, output) {
+  var args = new VISTAS_getDatasets_args();
+  args.read(input);
+  input.readMessageEnd();
+  this._handler.getDatasets(function (err, result) {
+    var result = new VISTAS_getDatasets_result((err != null ? err : {success: result}));
+    output.writeMessageBegin("getDatasets", Thrift.MessageType.REPLY, seqid);
     result.write(output);
     output.writeMessageEnd();
     output.flush();
