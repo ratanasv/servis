@@ -29,7 +29,7 @@ class V3 {
   static const char* ascii_fingerprint; // = "EFFAD640FBA2CA56C50155B2A4545897";
   static const uint8_t binary_fingerprint[16]; // = {0xEF,0xFA,0xD6,0x40,0xFB,0xA2,0xCA,0x56,0xC5,0x01,0x55,0xB2,0xA4,0x54,0x58,0x97};
 
-  V3(double a=0, double b=0, double c=0) : x(a), y(b), z(c) {
+  V3(double a=0.0, double b=0.0, double c=0.0) : x(a), y(b), z(c) {
   }
 
   virtual ~V3() throw() {}
@@ -76,17 +76,16 @@ class V3 {
 void swap(V3 &a, V3 &b);
 
 typedef struct _Terrain__isset {
-  _Terrain__isset() : vertices(false), indices(false), colors(false) {}
+  _Terrain__isset() : vertices(false), indices(false) {}
   bool vertices;
   bool indices;
-  bool colors;
 } _Terrain__isset;
 
 class Terrain {
  public:
 
-  static const char* ascii_fingerprint; // = "BB145DA4E142F9546FFF597B9D59B664";
-  static const uint8_t binary_fingerprint[16]; // = {0xBB,0x14,0x5D,0xA4,0xE1,0x42,0xF9,0x54,0x6F,0xFF,0x59,0x7B,0x9D,0x59,0xB6,0x64};
+  static const char* ascii_fingerprint; // = "CDBEA001FAA5F95AD0EB91CA130711A3";
+  static const uint8_t binary_fingerprint[16]; // = {0xCD,0xBE,0xA0,0x01,0xFA,0xA5,0xF9,0x5A,0xD0,0xEB,0x91,0xCA,0x13,0x07,0x11,0xA3};
 
   Terrain() {
   }
@@ -95,7 +94,6 @@ class Terrain {
 
   std::vector<V3>  vertices;
   std::vector<int32_t>  indices;
-  std::vector<V3>  colors;
 
   _Terrain__isset __isset;
 
@@ -107,20 +105,11 @@ class Terrain {
     indices = val;
   }
 
-  void __set_colors(const std::vector<V3> & val) {
-    colors = val;
-    __isset.colors = true;
-  }
-
   bool operator == (const Terrain & rhs) const
   {
     if (!(vertices == rhs.vertices))
       return false;
     if (!(indices == rhs.indices))
-      return false;
-    if (__isset.colors != rhs.__isset.colors)
-      return false;
-    else if (__isset.colors && !(colors == rhs.colors))
       return false;
     return true;
   }
@@ -136,6 +125,57 @@ class Terrain {
 };
 
 void swap(Terrain &a, Terrain &b);
+
+typedef struct _Texture__isset {
+  _Texture__isset() : texture(false), texCoord(false) {}
+  bool texture;
+  bool texCoord;
+} _Texture__isset;
+
+class Texture {
+ public:
+
+  static const char* ascii_fingerprint; // = "6E7C3712DCBCFCA8B4606C395E6A4E13";
+  static const uint8_t binary_fingerprint[16]; // = {0x6E,0x7C,0x37,0x12,0xDC,0xBC,0xFC,0xA8,0xB4,0x60,0x6C,0x39,0x5E,0x6A,0x4E,0x13};
+
+  Texture() {
+  }
+
+  virtual ~Texture() throw() {}
+
+  std::vector<V3>  texture;
+  std::vector<V3>  texCoord;
+
+  _Texture__isset __isset;
+
+  void __set_texture(const std::vector<V3> & val) {
+    texture = val;
+  }
+
+  void __set_texCoord(const std::vector<V3> & val) {
+    texCoord = val;
+  }
+
+  bool operator == (const Texture & rhs) const
+  {
+    if (!(texture == rhs.texture))
+      return false;
+    if (!(texCoord == rhs.texCoord))
+      return false;
+    return true;
+  }
+  bool operator != (const Texture &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Texture & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(Texture &a, Texture &b);
 
 } // namespace
 

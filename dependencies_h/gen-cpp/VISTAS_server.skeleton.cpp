@@ -27,6 +27,26 @@ class VISTASHandler : virtual public VISTASIf {
     printf("getTerrain\n");
   }
 
+  void getColor(std::vector<V3> & _return, const std::string& fileName, const std::string& attribute) {
+    // Your implementation goes here
+    printf("getColor\n");
+  }
+
+  void getNormalMap(Texture& _return, const std::string& fileName) {
+    // Your implementation goes here
+    printf("getNormalMap\n");
+  }
+
+  void getTextureMap(Texture& _return, const std::string& fileName, const std::string& attribute) {
+    // Your implementation goes here
+    printf("getTextureMap\n");
+  }
+
+  void getAttributes(std::vector<std::string> & _return, const std::string& fileName) {
+    // Your implementation goes here
+    printf("getAttributes\n");
+  }
+
 };
 
 int main(int argc, char **argv) {

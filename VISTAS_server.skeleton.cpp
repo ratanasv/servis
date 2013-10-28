@@ -33,7 +33,7 @@ public:
 		// Your initialization goes here
 	}
 
-	void getTerrain(Terrain& _return, const std::string& fileName) {
+	virtual void getTerrain(Terrain& _return, const std::string& fileName) {
 		// Your implementation goes here
 		printf("getTerrain\n");
 		shared_ptr<SHP3D> shp3dPlugin(new SHP3D());
@@ -63,6 +63,26 @@ public:
 			_return.indices.push_back((int32_t) indexPtr[i]);
 		}
 		shapeMesh.ReleaseIndexArray();
+	}
+
+	virtual void getColor(std::vector<V3> & _return, const std::string& fileName, const std::string& attribute) {
+		// Your implementation goes here
+		printf("getColor\n");
+	}
+
+	virtual void getNormalMap(Texture& _return, const std::string& fileName) {
+		// Your implementation goes here
+		printf("getNormalMap\n");
+	}
+
+	virtual void getTextureMap(Texture& _return, const std::string& fileName, const std::string& attribute) {
+		// Your implementation goes here
+		printf("getTextureMap\n");
+	}
+
+	virtual void getAttributes(std::vector<std::string> & _return, const std::string& fileName) {
+		// Your implementation goes here
+		printf("getAttributes\n");
 	}
 
 };

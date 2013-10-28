@@ -90,16 +90,12 @@ V3.prototype.write = function(output) {
 Terrain = module.exports.Terrain = function(args) {
   this.vertices = null;
   this.indices = null;
-  this.colors = null;
   if (args) {
     if (args.vertices !== undefined) {
       this.vertices = args.vertices;
     }
     if (args.indices !== undefined) {
       this.indices = args.indices;
-    }
-    if (args.colors !== undefined) {
-      this.colors = args.colors;
     }
   }
 };
@@ -158,21 +154,112 @@ Terrain.prototype.read = function(input) {
         input.skip(ftype);
       }
       break;
-      case 3:
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+Terrain.prototype.write = function(output) {
+  output.writeStructBegin('Terrain');
+  if (this.vertices !== null && this.vertices !== undefined) {
+    output.writeFieldBegin('vertices', Thrift.Type.LIST, 1);
+    output.writeListBegin(Thrift.Type.STRUCT, this.vertices.length);
+    for (var iter14 in this.vertices)
+    {
+      if (this.vertices.hasOwnProperty(iter14))
+      {
+        iter14 = this.vertices[iter14];
+        iter14.write(output);
+      }
+    }
+    output.writeListEnd();
+    output.writeFieldEnd();
+  }
+  if (this.indices !== null && this.indices !== undefined) {
+    output.writeFieldBegin('indices', Thrift.Type.LIST, 2);
+    output.writeListBegin(Thrift.Type.I32, this.indices.length);
+    for (var iter15 in this.indices)
+    {
+      if (this.indices.hasOwnProperty(iter15))
+      {
+        iter15 = this.indices[iter15];
+        output.writeI32(iter15);
+      }
+    }
+    output.writeListEnd();
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+Texture = module.exports.Texture = function(args) {
+  this.texture = null;
+  this.texCoord = null;
+  if (args) {
+    if (args.texture !== undefined) {
+      this.texture = args.texture;
+    }
+    if (args.texCoord !== undefined) {
+      this.texCoord = args.texCoord;
+    }
+  }
+};
+Texture.prototype = {};
+Texture.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
       if (ftype == Thrift.Type.LIST) {
-        var _size14 = 0;
-        var _rtmp318;
-        this.colors = [];
-        var _etype17 = 0;
-        _rtmp318 = input.readListBegin();
-        _etype17 = _rtmp318.etype;
-        _size14 = _rtmp318.size;
-        for (var _i19 = 0; _i19 < _size14; ++_i19)
+        var _size16 = 0;
+        var _rtmp320;
+        this.texture = [];
+        var _etype19 = 0;
+        _rtmp320 = input.readListBegin();
+        _etype19 = _rtmp320.etype;
+        _size16 = _rtmp320.size;
+        for (var _i21 = 0; _i21 < _size16; ++_i21)
         {
-          var elem20 = null;
-          elem20 = new ttypes.V3();
-          elem20.read(input);
-          this.colors.push(elem20);
+          var elem22 = null;
+          elem22 = new ttypes.V3();
+          elem22.read(input);
+          this.texture.push(elem22);
+        }
+        input.readListEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.LIST) {
+        var _size23 = 0;
+        var _rtmp327;
+        this.texCoord = [];
+        var _etype26 = 0;
+        _rtmp327 = input.readListBegin();
+        _etype26 = _rtmp327.etype;
+        _size23 = _rtmp327.size;
+        for (var _i28 = 0; _i28 < _size23; ++_i28)
+        {
+          var elem29 = null;
+          elem29 = new ttypes.V3();
+          elem29.read(input);
+          this.texCoord.push(elem29);
         }
         input.readListEnd();
       } else {
@@ -188,45 +275,31 @@ Terrain.prototype.read = function(input) {
   return;
 };
 
-Terrain.prototype.write = function(output) {
-  output.writeStructBegin('Terrain');
-  if (this.vertices !== null && this.vertices !== undefined) {
-    output.writeFieldBegin('vertices', Thrift.Type.LIST, 1);
-    output.writeListBegin(Thrift.Type.STRUCT, this.vertices.length);
-    for (var iter21 in this.vertices)
+Texture.prototype.write = function(output) {
+  output.writeStructBegin('Texture');
+  if (this.texture !== null && this.texture !== undefined) {
+    output.writeFieldBegin('texture', Thrift.Type.LIST, 1);
+    output.writeListBegin(Thrift.Type.STRUCT, this.texture.length);
+    for (var iter30 in this.texture)
     {
-      if (this.vertices.hasOwnProperty(iter21))
+      if (this.texture.hasOwnProperty(iter30))
       {
-        iter21 = this.vertices[iter21];
-        iter21.write(output);
+        iter30 = this.texture[iter30];
+        iter30.write(output);
       }
     }
     output.writeListEnd();
     output.writeFieldEnd();
   }
-  if (this.indices !== null && this.indices !== undefined) {
-    output.writeFieldBegin('indices', Thrift.Type.LIST, 2);
-    output.writeListBegin(Thrift.Type.I32, this.indices.length);
-    for (var iter22 in this.indices)
+  if (this.texCoord !== null && this.texCoord !== undefined) {
+    output.writeFieldBegin('texCoord', Thrift.Type.LIST, 2);
+    output.writeListBegin(Thrift.Type.STRUCT, this.texCoord.length);
+    for (var iter31 in this.texCoord)
     {
-      if (this.indices.hasOwnProperty(iter22))
+      if (this.texCoord.hasOwnProperty(iter31))
       {
-        iter22 = this.indices[iter22];
-        output.writeI32(iter22);
-      }
-    }
-    output.writeListEnd();
-    output.writeFieldEnd();
-  }
-  if (this.colors !== null && this.colors !== undefined) {
-    output.writeFieldBegin('colors', Thrift.Type.LIST, 3);
-    output.writeListBegin(Thrift.Type.STRUCT, this.colors.length);
-    for (var iter23 in this.colors)
-    {
-      if (this.colors.hasOwnProperty(iter23))
-      {
-        iter23 = this.colors[iter23];
-        iter23.write(output);
+        iter31 = this.texCoord[iter31];
+        iter31.write(output);
       }
     }
     output.writeListEnd();

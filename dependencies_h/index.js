@@ -7,28 +7,51 @@ var url = require('url');
 var servis_types = require('./gen-nodejs/servis_types.js'),
     VISTAS = require('./gen-nodejs/VISTAS.js');
 
+function getOnThriftCallBack(response, connection) {
+    return function(err, data) {
+        var payload;
+        if (err) {
+            console.error(err);
+        } else {
+            response.writeHead(200, {"Content-Type": "application/javascript"});
+            payload = querystring.callback + '(' + JSON.stringify(data) + ');';
+            response.write(payload);
+            connection.end();
+            response.end();
+        }
+    }
+}
+
 function jsonpHandler(req, res) {
     var connection = thrift.createConnection('localhost', 9090),
         client = thrift.createClient(VISTAS, connection);
     var queryString = querystring.parse(url.parse(req.url).query);
+    var onThriftCallBack;
 
     connection.on('error', function(err) {
         console.error(err);
     });
+    onThriftCallBack = getOnThriftCallBack(res, connection);
 
-    client.getTerrain(queryString.fileName, function(err, data) {
-        var payload;
+    console.log('ip=' + req.connection.remoteAddress + ' queryString=' + JSON.stringify(queryString));
 
-        if (err) {
-            console.error(err);
-        } else {
-            res.writeHead(200, {"Content-Type": "application/javascript"});
-            payload = queryString.callback + '(' + JSON.stringify(data) + ');';
-            res.write(payload);
-            connection.end();
-            res.end();
-        }
-    });
+    switch(queryString.method) {
+    case 'getTerrain':
+        client.getTerrain(queryString.fileName, onThriftCallBack);
+        break;
+    case 'getColor':
+        client.getColor(queryString.fileName, queryString.attribute, onThriftCallBack);
+        break;
+    case 'getNormalMap':
+        client.getNormalMap(queryString.fileName, onThriftCallBack);
+        break;
+    case 'getTextureMap':
+        client.getTextureMap(queryString.fileName, onThriftCallBack);
+        break;
+    case 'getAttributes':
+        client.getAttriutes(queryString.fileName, onThriftCallBack);
+        break;
+    }
 }
 
 http.createServer(jsonpHandler).listen(8888);
