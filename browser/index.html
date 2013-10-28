@@ -6,11 +6,11 @@
     </head>
     <body>
         <div id="container"></div>
+        <script src="http://web.engr.oregonstate.edu/~ratanasv/WebGL-Inspector/core/embed.js"></script>
         <script src=http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js></script>>
-        <script src="http://web.engr.oregonstate.edu/~ratanasv/threejs/build/three.min.js"></script>
+        <script src="http://web.engr.oregonstate.edu/~ratanasv/threejs/build/three.js"></script>
         <script src="http://web.engr.oregonstate.edu/~ratanasv/threejs/examples/js/libs/stats.min.js"></script>
         <script src="http://web.engr.oregonstate.edu/~ratanasv/threejs/examples/js/controls/TrackballControls.js"></script>
-        <script src="https://github.com/benvanik/WebGL-Inspector/blob/master/core/embed.js"></script>
         <script>
             var servisHost = 'http://54.200.144.27:8888';
             var container, stats;
@@ -21,8 +21,12 @@
             getData();
 
             function getData() {
+                var queryObject = {
+                    method: 'getTerrain',
+                    fileName: 'blah'
+                };
                 $.ajax({
-                    url: servisHost,
+                    url: servisHost + '?' + JSON.stringify(queryObject),
                     dataType: 'jsonp',
                     success: function(res) {
                         data = res;
@@ -34,28 +38,31 @@
 
             function addGeometryAttributes(geometry) {
                 var pos, indices;
-                geometry.addAttribute('index', Uint32Array, 3, 1);
-                geometry.addAttribute('position', Float32Array, 3, 3);
+
+                geometry.addAttribute('index', Uint16Array, data.indices.length, 1);
+                geometry.addAttribute('position', Float32Array, data.vertices.length, 3);
                 ind = geometry.attributes.index.array;
                 pos = geometry.attributes.position.array;
-                /*for (var i=0; i<data.indices.length; i++) {
+                for (var i=0; i<data.indices.length; i++) {
                     ind[i] = data.indices[i];
                 }
                 for (var i=0; i<data.vertices.length; i++) {
                     pos[3*i+0] = data.vertices[i].x;
                     pos[3*i+1] = data.vertices[i].y;
                     pos[3*i+2] = data.vertices[i].z;
-                }*/
+                }
+                /*
                 ind[0] = 0; ind[1] = 1; ind[2] = 2;
                 pos[0] = 10.0; pos[1] = -10.0; pos[2] = 0.0;
                 pos[3] = 0.0; pos[4] = 10.0; pos[5] = 0.0;
-                pos[6] = -10.0; pos[7]= -10.0; pos[8] = 0.0;
+                pos[6] = -10.0; pos[7]= -10.0; pos[8] = 0.0;*/
                 geometry.offsets = [];
                 geometry.offsets.push({
                     start: 0,
                     index: 0,
-                    count: 3
+                    count: data.indices.length
                 });
+
             }
 
             function addLighting(scene) {
@@ -78,6 +85,7 @@
                 scene = new THREE.Scene();
                 mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
                             color: 0xf47321,
+                            wireframe: true,
                             side: THREE.DoubleSide}));
                 scene.add(mesh);
                 //addLighting(scene);
@@ -93,6 +101,8 @@
                 stats.domElement.style.position = 'absolute';
                 stats.domElement.style.top = '0px';
                 container.appendChild(stats.domElement);
+
+                window.addEventListener('resize', onWindowResize, false);
             }
 
             function animate() {
@@ -104,6 +114,12 @@
 
             function render() {
                 renderer.render(scene, camera);
+            }
+
+            function onWindowResize() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
             }
         </script>
     </body>
