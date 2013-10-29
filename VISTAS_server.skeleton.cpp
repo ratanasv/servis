@@ -12,12 +12,15 @@
 #include <Envision.h>
 #include <vector>
 #include <stdexcept>
+#include <algorithm>
+#include <set>
 
 #ifdef MACOSX
 const VI_String DATA_PREFIX = VI_String("/Users/ratanasv/Documents/data/");
 #else
 const VI_String DATA_PREFIX = VI_String("/home/ubuntu/data/");
 #endif
+const VI_String SHP_EXTENSION = VI_String("shp");
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -25,17 +28,31 @@ using namespace ::apache::thrift::transport;
 using namespace ::apache::thrift::server;
 
 using std::tr1::shared_ptr;
-
+using std::vector;
+using std::find_if;
+using std::set;
 using namespace  ::servis;
+
+class FindIfExtensionFound {
+private:
+    const VI_String extension;
+public:
+    FindIfExtensionFound(const VI_String& in) : extension(in) {};
+    bool operator() (const VI_Path& element) {
+        return element.GetExtension() == extension;
+    }
+};
+
+
 class VISTASHandler : virtual public VISTASIf {
 public:
 	VISTASHandler() {
 		// Your initialization goes here
 	}
 
-	void getTerrain(Terrain& _return, const std::string& fileName) {
+	virtual void getTerrain(Terrain& _return, const std::string& fileName) {
 		// Your implementation goes here
-		printf("getTerrain\n");
+		printf("getTerrain\n %s", fileName.c_str());
 		shared_ptr<SHP3D> shp3dPlugin(new SHP3D());
 		shared_ptr<EnvisionDataPlugin> envisionPlugin(new EnvisionDataPlugin());
 		const VI_Path pathToShp = VI_Path(DATA_PREFIX + VI_String("eastern_oregon/idu3D.shp"));
@@ -63,6 +80,46 @@ public:
 			_return.indices.push_back((int32_t) indexPtr[i]);
 		}
 		shapeMesh.ReleaseIndexArray();
+	}
+
+	virtual void getColor(std::vector<V3> & _return, const std::string& fileName, const std::string& attribute) {
+		// Your implementation goes here
+		printf("getColor\n %s %s", fileName.c_str(), attribute.c_str());
+	}
+
+	virtual void getNormalMap(Texture& _return, const std::string& fileName) {
+		// Your implementation goes here
+		printf("getNormalMap\n %s", fileName.c_str());
+	}
+
+	virtual void getTextureMap(Texture& _return, const std::string& fileName, const std::string& attribute) {
+		// Your implementation goes here
+		printf("getTextureMap\n %s %s", fileName.c_str(), attribute.c_str());
+	}
+
+	virtual void getAttributes(std::vector<std::string> & _return, const std::string& fileName) {
+		printf("getAttributes %s \n", fileName.c_str());
+		shared_ptr<VI_DataPlugin> dataPlugin;
+		const VI_Path pathToFile = VI_Path(DATA_PREFIX + VI_String(fileName));
+		auto datasetsList = pathToFile.GetFiles();
+        auto foundFile = find_if(datasetsList.begin(), datasetsList.end(), FindIfExtensionFound(SHP_EXTENSION));
+        if (foundFile != datasetsList.end()) {
+            dataPlugin.reset(new EnvisionDataPlugin());
+        } else {
+            dataPlugin.reset();
+        }
+		dataPlugin->Set(*foundFile);
+		auto attributeList = dataPlugin->GetAttributes();
+		_return.insert(_return.begin(), attributeList.begin(), attributeList.end());
+	}
+
+	virtual void getDatasets(std::vector<std::string> & _return) {
+		printf("getDatasets\n");
+		VI_Path datasetsRoot(DATA_PREFIX);
+		auto datasetsList = datasetsRoot.GetFiles();
+		for (auto it : datasetsList) {
+			_return.push_back(it.GetElement(-1).c_str());
+		}
 	}
 
 };

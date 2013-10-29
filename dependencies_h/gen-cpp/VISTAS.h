@@ -16,6 +16,11 @@ class VISTASIf {
  public:
   virtual ~VISTASIf() {}
   virtual void getTerrain(Terrain& _return, const std::string& fileName) = 0;
+  virtual void getColor(std::vector<V3> & _return, const std::string& fileName, const std::string& attribute) = 0;
+  virtual void getNormalMap(Texture& _return, const std::string& fileName) = 0;
+  virtual void getTextureMap(Texture& _return, const std::string& fileName, const std::string& attribute) = 0;
+  virtual void getAttributes(std::vector<std::string> & _return, const std::string& fileName) = 0;
+  virtual void getDatasets(std::vector<std::string> & _return) = 0;
 };
 
 class VISTASIfFactory {
@@ -46,6 +51,21 @@ class VISTASNull : virtual public VISTASIf {
  public:
   virtual ~VISTASNull() {}
   void getTerrain(Terrain& /* _return */, const std::string& /* fileName */) {
+    return;
+  }
+  void getColor(std::vector<V3> & /* _return */, const std::string& /* fileName */, const std::string& /* attribute */) {
+    return;
+  }
+  void getNormalMap(Texture& /* _return */, const std::string& /* fileName */) {
+    return;
+  }
+  void getTextureMap(Texture& /* _return */, const std::string& /* fileName */, const std::string& /* attribute */) {
+    return;
+  }
+  void getAttributes(std::vector<std::string> & /* _return */, const std::string& /* fileName */) {
+    return;
+  }
+  void getDatasets(std::vector<std::string> & /* _return */) {
     return;
   }
 };
@@ -158,6 +178,550 @@ class VISTAS_getTerrain_presult {
 
 };
 
+typedef struct _VISTAS_getColor_args__isset {
+  _VISTAS_getColor_args__isset() : fileName(false), attribute(false) {}
+  bool fileName;
+  bool attribute;
+} _VISTAS_getColor_args__isset;
+
+class VISTAS_getColor_args {
+ public:
+
+  VISTAS_getColor_args() : fileName(), attribute() {
+  }
+
+  virtual ~VISTAS_getColor_args() throw() {}
+
+  std::string fileName;
+  std::string attribute;
+
+  _VISTAS_getColor_args__isset __isset;
+
+  void __set_fileName(const std::string& val) {
+    fileName = val;
+  }
+
+  void __set_attribute(const std::string& val) {
+    attribute = val;
+  }
+
+  bool operator == (const VISTAS_getColor_args & rhs) const
+  {
+    if (!(fileName == rhs.fileName))
+      return false;
+    if (!(attribute == rhs.attribute))
+      return false;
+    return true;
+  }
+  bool operator != (const VISTAS_getColor_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const VISTAS_getColor_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class VISTAS_getColor_pargs {
+ public:
+
+
+  virtual ~VISTAS_getColor_pargs() throw() {}
+
+  const std::string* fileName;
+  const std::string* attribute;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _VISTAS_getColor_result__isset {
+  _VISTAS_getColor_result__isset() : success(false) {}
+  bool success;
+} _VISTAS_getColor_result__isset;
+
+class VISTAS_getColor_result {
+ public:
+
+  VISTAS_getColor_result() {
+  }
+
+  virtual ~VISTAS_getColor_result() throw() {}
+
+  std::vector<V3>  success;
+
+  _VISTAS_getColor_result__isset __isset;
+
+  void __set_success(const std::vector<V3> & val) {
+    success = val;
+  }
+
+  bool operator == (const VISTAS_getColor_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const VISTAS_getColor_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const VISTAS_getColor_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _VISTAS_getColor_presult__isset {
+  _VISTAS_getColor_presult__isset() : success(false) {}
+  bool success;
+} _VISTAS_getColor_presult__isset;
+
+class VISTAS_getColor_presult {
+ public:
+
+
+  virtual ~VISTAS_getColor_presult() throw() {}
+
+  std::vector<V3> * success;
+
+  _VISTAS_getColor_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _VISTAS_getNormalMap_args__isset {
+  _VISTAS_getNormalMap_args__isset() : fileName(false) {}
+  bool fileName;
+} _VISTAS_getNormalMap_args__isset;
+
+class VISTAS_getNormalMap_args {
+ public:
+
+  VISTAS_getNormalMap_args() : fileName() {
+  }
+
+  virtual ~VISTAS_getNormalMap_args() throw() {}
+
+  std::string fileName;
+
+  _VISTAS_getNormalMap_args__isset __isset;
+
+  void __set_fileName(const std::string& val) {
+    fileName = val;
+  }
+
+  bool operator == (const VISTAS_getNormalMap_args & rhs) const
+  {
+    if (!(fileName == rhs.fileName))
+      return false;
+    return true;
+  }
+  bool operator != (const VISTAS_getNormalMap_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const VISTAS_getNormalMap_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class VISTAS_getNormalMap_pargs {
+ public:
+
+
+  virtual ~VISTAS_getNormalMap_pargs() throw() {}
+
+  const std::string* fileName;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _VISTAS_getNormalMap_result__isset {
+  _VISTAS_getNormalMap_result__isset() : success(false) {}
+  bool success;
+} _VISTAS_getNormalMap_result__isset;
+
+class VISTAS_getNormalMap_result {
+ public:
+
+  VISTAS_getNormalMap_result() {
+  }
+
+  virtual ~VISTAS_getNormalMap_result() throw() {}
+
+  Texture success;
+
+  _VISTAS_getNormalMap_result__isset __isset;
+
+  void __set_success(const Texture& val) {
+    success = val;
+  }
+
+  bool operator == (const VISTAS_getNormalMap_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const VISTAS_getNormalMap_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const VISTAS_getNormalMap_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _VISTAS_getNormalMap_presult__isset {
+  _VISTAS_getNormalMap_presult__isset() : success(false) {}
+  bool success;
+} _VISTAS_getNormalMap_presult__isset;
+
+class VISTAS_getNormalMap_presult {
+ public:
+
+
+  virtual ~VISTAS_getNormalMap_presult() throw() {}
+
+  Texture* success;
+
+  _VISTAS_getNormalMap_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _VISTAS_getTextureMap_args__isset {
+  _VISTAS_getTextureMap_args__isset() : fileName(false), attribute(false) {}
+  bool fileName;
+  bool attribute;
+} _VISTAS_getTextureMap_args__isset;
+
+class VISTAS_getTextureMap_args {
+ public:
+
+  VISTAS_getTextureMap_args() : fileName(), attribute() {
+  }
+
+  virtual ~VISTAS_getTextureMap_args() throw() {}
+
+  std::string fileName;
+  std::string attribute;
+
+  _VISTAS_getTextureMap_args__isset __isset;
+
+  void __set_fileName(const std::string& val) {
+    fileName = val;
+  }
+
+  void __set_attribute(const std::string& val) {
+    attribute = val;
+  }
+
+  bool operator == (const VISTAS_getTextureMap_args & rhs) const
+  {
+    if (!(fileName == rhs.fileName))
+      return false;
+    if (!(attribute == rhs.attribute))
+      return false;
+    return true;
+  }
+  bool operator != (const VISTAS_getTextureMap_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const VISTAS_getTextureMap_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class VISTAS_getTextureMap_pargs {
+ public:
+
+
+  virtual ~VISTAS_getTextureMap_pargs() throw() {}
+
+  const std::string* fileName;
+  const std::string* attribute;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _VISTAS_getTextureMap_result__isset {
+  _VISTAS_getTextureMap_result__isset() : success(false) {}
+  bool success;
+} _VISTAS_getTextureMap_result__isset;
+
+class VISTAS_getTextureMap_result {
+ public:
+
+  VISTAS_getTextureMap_result() {
+  }
+
+  virtual ~VISTAS_getTextureMap_result() throw() {}
+
+  Texture success;
+
+  _VISTAS_getTextureMap_result__isset __isset;
+
+  void __set_success(const Texture& val) {
+    success = val;
+  }
+
+  bool operator == (const VISTAS_getTextureMap_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const VISTAS_getTextureMap_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const VISTAS_getTextureMap_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _VISTAS_getTextureMap_presult__isset {
+  _VISTAS_getTextureMap_presult__isset() : success(false) {}
+  bool success;
+} _VISTAS_getTextureMap_presult__isset;
+
+class VISTAS_getTextureMap_presult {
+ public:
+
+
+  virtual ~VISTAS_getTextureMap_presult() throw() {}
+
+  Texture* success;
+
+  _VISTAS_getTextureMap_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _VISTAS_getAttributes_args__isset {
+  _VISTAS_getAttributes_args__isset() : fileName(false) {}
+  bool fileName;
+} _VISTAS_getAttributes_args__isset;
+
+class VISTAS_getAttributes_args {
+ public:
+
+  VISTAS_getAttributes_args() : fileName() {
+  }
+
+  virtual ~VISTAS_getAttributes_args() throw() {}
+
+  std::string fileName;
+
+  _VISTAS_getAttributes_args__isset __isset;
+
+  void __set_fileName(const std::string& val) {
+    fileName = val;
+  }
+
+  bool operator == (const VISTAS_getAttributes_args & rhs) const
+  {
+    if (!(fileName == rhs.fileName))
+      return false;
+    return true;
+  }
+  bool operator != (const VISTAS_getAttributes_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const VISTAS_getAttributes_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class VISTAS_getAttributes_pargs {
+ public:
+
+
+  virtual ~VISTAS_getAttributes_pargs() throw() {}
+
+  const std::string* fileName;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _VISTAS_getAttributes_result__isset {
+  _VISTAS_getAttributes_result__isset() : success(false) {}
+  bool success;
+} _VISTAS_getAttributes_result__isset;
+
+class VISTAS_getAttributes_result {
+ public:
+
+  VISTAS_getAttributes_result() {
+  }
+
+  virtual ~VISTAS_getAttributes_result() throw() {}
+
+  std::vector<std::string>  success;
+
+  _VISTAS_getAttributes_result__isset __isset;
+
+  void __set_success(const std::vector<std::string> & val) {
+    success = val;
+  }
+
+  bool operator == (const VISTAS_getAttributes_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const VISTAS_getAttributes_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const VISTAS_getAttributes_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _VISTAS_getAttributes_presult__isset {
+  _VISTAS_getAttributes_presult__isset() : success(false) {}
+  bool success;
+} _VISTAS_getAttributes_presult__isset;
+
+class VISTAS_getAttributes_presult {
+ public:
+
+
+  virtual ~VISTAS_getAttributes_presult() throw() {}
+
+  std::vector<std::string> * success;
+
+  _VISTAS_getAttributes_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class VISTAS_getDatasets_args {
+ public:
+
+  VISTAS_getDatasets_args() {
+  }
+
+  virtual ~VISTAS_getDatasets_args() throw() {}
+
+
+  bool operator == (const VISTAS_getDatasets_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const VISTAS_getDatasets_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const VISTAS_getDatasets_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class VISTAS_getDatasets_pargs {
+ public:
+
+
+  virtual ~VISTAS_getDatasets_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _VISTAS_getDatasets_result__isset {
+  _VISTAS_getDatasets_result__isset() : success(false) {}
+  bool success;
+} _VISTAS_getDatasets_result__isset;
+
+class VISTAS_getDatasets_result {
+ public:
+
+  VISTAS_getDatasets_result() {
+  }
+
+  virtual ~VISTAS_getDatasets_result() throw() {}
+
+  std::vector<std::string>  success;
+
+  _VISTAS_getDatasets_result__isset __isset;
+
+  void __set_success(const std::vector<std::string> & val) {
+    success = val;
+  }
+
+  bool operator == (const VISTAS_getDatasets_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const VISTAS_getDatasets_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const VISTAS_getDatasets_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _VISTAS_getDatasets_presult__isset {
+  _VISTAS_getDatasets_presult__isset() : success(false) {}
+  bool success;
+} _VISTAS_getDatasets_presult__isset;
+
+class VISTAS_getDatasets_presult {
+ public:
+
+
+  virtual ~VISTAS_getDatasets_presult() throw() {}
+
+  std::vector<std::string> * success;
+
+  _VISTAS_getDatasets_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class VISTASClient : virtual public VISTASIf {
  public:
   VISTASClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -181,6 +745,21 @@ class VISTASClient : virtual public VISTASIf {
   void getTerrain(Terrain& _return, const std::string& fileName);
   void send_getTerrain(const std::string& fileName);
   void recv_getTerrain(Terrain& _return);
+  void getColor(std::vector<V3> & _return, const std::string& fileName, const std::string& attribute);
+  void send_getColor(const std::string& fileName, const std::string& attribute);
+  void recv_getColor(std::vector<V3> & _return);
+  void getNormalMap(Texture& _return, const std::string& fileName);
+  void send_getNormalMap(const std::string& fileName);
+  void recv_getNormalMap(Texture& _return);
+  void getTextureMap(Texture& _return, const std::string& fileName, const std::string& attribute);
+  void send_getTextureMap(const std::string& fileName, const std::string& attribute);
+  void recv_getTextureMap(Texture& _return);
+  void getAttributes(std::vector<std::string> & _return, const std::string& fileName);
+  void send_getAttributes(const std::string& fileName);
+  void recv_getAttributes(std::vector<std::string> & _return);
+  void getDatasets(std::vector<std::string> & _return);
+  void send_getDatasets();
+  void recv_getDatasets(std::vector<std::string> & _return);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -197,10 +776,20 @@ class VISTASProcessor : public ::apache::thrift::TDispatchProcessor {
   typedef std::map<std::string, ProcessFunction> ProcessMap;
   ProcessMap processMap_;
   void process_getTerrain(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getColor(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getNormalMap(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getTextureMap(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getAttributes(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getDatasets(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   VISTASProcessor(boost::shared_ptr<VISTASIf> iface) :
     iface_(iface) {
     processMap_["getTerrain"] = &VISTASProcessor::process_getTerrain;
+    processMap_["getColor"] = &VISTASProcessor::process_getColor;
+    processMap_["getNormalMap"] = &VISTASProcessor::process_getNormalMap;
+    processMap_["getTextureMap"] = &VISTASProcessor::process_getTextureMap;
+    processMap_["getAttributes"] = &VISTASProcessor::process_getAttributes;
+    processMap_["getDatasets"] = &VISTASProcessor::process_getDatasets;
   }
 
   virtual ~VISTASProcessor() {}
@@ -236,6 +825,56 @@ class VISTASMultiface : virtual public VISTASIf {
       ifaces_[i]->getTerrain(_return, fileName);
     }
     ifaces_[i]->getTerrain(_return, fileName);
+    return;
+  }
+
+  void getColor(std::vector<V3> & _return, const std::string& fileName, const std::string& attribute) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getColor(_return, fileName, attribute);
+    }
+    ifaces_[i]->getColor(_return, fileName, attribute);
+    return;
+  }
+
+  void getNormalMap(Texture& _return, const std::string& fileName) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getNormalMap(_return, fileName);
+    }
+    ifaces_[i]->getNormalMap(_return, fileName);
+    return;
+  }
+
+  void getTextureMap(Texture& _return, const std::string& fileName, const std::string& attribute) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getTextureMap(_return, fileName, attribute);
+    }
+    ifaces_[i]->getTextureMap(_return, fileName, attribute);
+    return;
+  }
+
+  void getAttributes(std::vector<std::string> & _return, const std::string& fileName) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getAttributes(_return, fileName);
+    }
+    ifaces_[i]->getAttributes(_return, fileName);
+    return;
+  }
+
+  void getDatasets(std::vector<std::string> & _return) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getDatasets(_return);
+    }
+    ifaces_[i]->getDatasets(_return);
     return;
   }
 

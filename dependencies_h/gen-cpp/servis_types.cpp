@@ -98,8 +98,8 @@ void swap(V3 &a, V3 &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* Terrain::ascii_fingerprint = "BB145DA4E142F9546FFF597B9D59B664";
-const uint8_t Terrain::binary_fingerprint[16] = {0xBB,0x14,0x5D,0xA4,0xE1,0x42,0xF9,0x54,0x6F,0xFF,0x59,0x7B,0x9D,0x59,0xB6,0x64};
+const char* Terrain::ascii_fingerprint = "CDBEA001FAA5F95AD0EB91CA130711A3";
+const uint8_t Terrain::binary_fingerprint[16] = {0xCD,0xBE,0xA0,0x01,0xFA,0xA5,0xF9,0x5A,0xD0,0xEB,0x91,0xCA,0x13,0x07,0x11,0xA3};
 
 uint32_t Terrain::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -161,26 +161,6 @@ uint32_t Terrain::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 3:
-        if (ftype == ::apache::thrift::protocol::T_LIST) {
-          {
-            this->colors.clear();
-            uint32_t _size10;
-            ::apache::thrift::protocol::TType _etype13;
-            xfer += iprot->readListBegin(_etype13, _size10);
-            this->colors.resize(_size10);
-            uint32_t _i14;
-            for (_i14 = 0; _i14 < _size10; ++_i14)
-            {
-              xfer += this->colors[_i14].read(iprot);
-            }
-            xfer += iprot->readListEnd();
-          }
-          this->__isset.colors = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -200,10 +180,10 @@ uint32_t Terrain::write(::apache::thrift::protocol::TProtocol* oprot) const {
   xfer += oprot->writeFieldBegin("vertices", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->vertices.size()));
-    std::vector<V3> ::const_iterator _iter15;
-    for (_iter15 = this->vertices.begin(); _iter15 != this->vertices.end(); ++_iter15)
+    std::vector<V3> ::const_iterator _iter10;
+    for (_iter10 = this->vertices.begin(); _iter10 != this->vertices.end(); ++_iter10)
     {
-      xfer += (*_iter15).write(oprot);
+      xfer += (*_iter10).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -212,28 +192,15 @@ uint32_t Terrain::write(::apache::thrift::protocol::TProtocol* oprot) const {
   xfer += oprot->writeFieldBegin("indices", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_I32, static_cast<uint32_t>(this->indices.size()));
-    std::vector<int32_t> ::const_iterator _iter16;
-    for (_iter16 = this->indices.begin(); _iter16 != this->indices.end(); ++_iter16)
+    std::vector<int32_t> ::const_iterator _iter11;
+    for (_iter11 = this->indices.begin(); _iter11 != this->indices.end(); ++_iter11)
     {
-      xfer += oprot->writeI32((*_iter16));
+      xfer += oprot->writeI32((*_iter11));
     }
     xfer += oprot->writeListEnd();
   }
   xfer += oprot->writeFieldEnd();
 
-  if (this->__isset.colors) {
-    xfer += oprot->writeFieldBegin("colors", ::apache::thrift::protocol::T_LIST, 3);
-    {
-      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->colors.size()));
-      std::vector<V3> ::const_iterator _iter17;
-      for (_iter17 = this->colors.begin(); _iter17 != this->colors.end(); ++_iter17)
-      {
-        xfer += (*_iter17).write(oprot);
-      }
-      xfer += oprot->writeListEnd();
-    }
-    xfer += oprot->writeFieldEnd();
-  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -243,7 +210,121 @@ void swap(Terrain &a, Terrain &b) {
   using ::std::swap;
   swap(a.vertices, b.vertices);
   swap(a.indices, b.indices);
-  swap(a.colors, b.colors);
+  swap(a.__isset, b.__isset);
+}
+
+const char* Texture::ascii_fingerprint = "6E7C3712DCBCFCA8B4606C395E6A4E13";
+const uint8_t Texture::binary_fingerprint[16] = {0x6E,0x7C,0x37,0x12,0xDC,0xBC,0xFC,0xA8,0xB4,0x60,0x6C,0x39,0x5E,0x6A,0x4E,0x13};
+
+uint32_t Texture::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->texture.clear();
+            uint32_t _size12;
+            ::apache::thrift::protocol::TType _etype15;
+            xfer += iprot->readListBegin(_etype15, _size12);
+            this->texture.resize(_size12);
+            uint32_t _i16;
+            for (_i16 = 0; _i16 < _size12; ++_i16)
+            {
+              xfer += this->texture[_i16].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.texture = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->texCoord.clear();
+            uint32_t _size17;
+            ::apache::thrift::protocol::TType _etype20;
+            xfer += iprot->readListBegin(_etype20, _size17);
+            this->texCoord.resize(_size17);
+            uint32_t _i21;
+            for (_i21 = 0; _i21 < _size17; ++_i21)
+            {
+              xfer += this->texCoord[_i21].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.texCoord = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Texture::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Texture");
+
+  xfer += oprot->writeFieldBegin("texture", ::apache::thrift::protocol::T_LIST, 1);
+  {
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->texture.size()));
+    std::vector<V3> ::const_iterator _iter22;
+    for (_iter22 = this->texture.begin(); _iter22 != this->texture.end(); ++_iter22)
+    {
+      xfer += (*_iter22).write(oprot);
+    }
+    xfer += oprot->writeListEnd();
+  }
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("texCoord", ::apache::thrift::protocol::T_LIST, 2);
+  {
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->texCoord.size()));
+    std::vector<V3> ::const_iterator _iter23;
+    for (_iter23 = this->texCoord.begin(); _iter23 != this->texCoord.end(); ++_iter23)
+    {
+      xfer += (*_iter23).write(oprot);
+    }
+    xfer += oprot->writeListEnd();
+  }
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(Texture &a, Texture &b) {
+  using ::std::swap;
+  swap(a.texture, b.texture);
+  swap(a.texCoord, b.texCoord);
   swap(a.__isset, b.__isset);
 }
 

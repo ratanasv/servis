@@ -115,6 +115,606 @@ VISTAS_getTerrain_result.prototype.write = function(output) {
   return;
 };
 
+VISTAS_getColor_args = function(args) {
+  this.fileName = null;
+  this.attribute = null;
+  if (args) {
+    if (args.fileName !== undefined) {
+      this.fileName = args.fileName;
+    }
+    if (args.attribute !== undefined) {
+      this.attribute = args.attribute;
+    }
+  }
+};
+VISTAS_getColor_args.prototype = {};
+VISTAS_getColor_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.STRING) {
+        this.fileName = input.readString();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.STRING) {
+        this.attribute = input.readString();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+VISTAS_getColor_args.prototype.write = function(output) {
+  output.writeStructBegin('VISTAS_getColor_args');
+  if (this.fileName !== null && this.fileName !== undefined) {
+    output.writeFieldBegin('fileName', Thrift.Type.STRING, 1);
+    output.writeString(this.fileName);
+    output.writeFieldEnd();
+  }
+  if (this.attribute !== null && this.attribute !== undefined) {
+    output.writeFieldBegin('attribute', Thrift.Type.STRING, 2);
+    output.writeString(this.attribute);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+VISTAS_getColor_result = function(args) {
+  this.success = null;
+  if (args) {
+    if (args.success !== undefined) {
+      this.success = args.success;
+    }
+  }
+};
+VISTAS_getColor_result.prototype = {};
+VISTAS_getColor_result.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+      if (ftype == Thrift.Type.LIST) {
+        var _size32 = 0;
+        var _rtmp336;
+        this.success = [];
+        var _etype35 = 0;
+        _rtmp336 = input.readListBegin();
+        _etype35 = _rtmp336.etype;
+        _size32 = _rtmp336.size;
+        for (var _i37 = 0; _i37 < _size32; ++_i37)
+        {
+          var elem38 = null;
+          elem38 = new ttypes.V3();
+          elem38.read(input);
+          this.success.push(elem38);
+        }
+        input.readListEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+VISTAS_getColor_result.prototype.write = function(output) {
+  output.writeStructBegin('VISTAS_getColor_result');
+  if (this.success !== null && this.success !== undefined) {
+    output.writeFieldBegin('success', Thrift.Type.LIST, 0);
+    output.writeListBegin(Thrift.Type.STRUCT, this.success.length);
+    for (var iter39 in this.success)
+    {
+      if (this.success.hasOwnProperty(iter39))
+      {
+        iter39 = this.success[iter39];
+        iter39.write(output);
+      }
+    }
+    output.writeListEnd();
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+VISTAS_getNormalMap_args = function(args) {
+  this.fileName = null;
+  if (args) {
+    if (args.fileName !== undefined) {
+      this.fileName = args.fileName;
+    }
+  }
+};
+VISTAS_getNormalMap_args.prototype = {};
+VISTAS_getNormalMap_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.STRING) {
+        this.fileName = input.readString();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+VISTAS_getNormalMap_args.prototype.write = function(output) {
+  output.writeStructBegin('VISTAS_getNormalMap_args');
+  if (this.fileName !== null && this.fileName !== undefined) {
+    output.writeFieldBegin('fileName', Thrift.Type.STRING, 1);
+    output.writeString(this.fileName);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+VISTAS_getNormalMap_result = function(args) {
+  this.success = null;
+  if (args) {
+    if (args.success !== undefined) {
+      this.success = args.success;
+    }
+  }
+};
+VISTAS_getNormalMap_result.prototype = {};
+VISTAS_getNormalMap_result.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.success = new ttypes.Texture();
+        this.success.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+VISTAS_getNormalMap_result.prototype.write = function(output) {
+  output.writeStructBegin('VISTAS_getNormalMap_result');
+  if (this.success !== null && this.success !== undefined) {
+    output.writeFieldBegin('success', Thrift.Type.STRUCT, 0);
+    this.success.write(output);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+VISTAS_getTextureMap_args = function(args) {
+  this.fileName = null;
+  this.attribute = null;
+  if (args) {
+    if (args.fileName !== undefined) {
+      this.fileName = args.fileName;
+    }
+    if (args.attribute !== undefined) {
+      this.attribute = args.attribute;
+    }
+  }
+};
+VISTAS_getTextureMap_args.prototype = {};
+VISTAS_getTextureMap_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.STRING) {
+        this.fileName = input.readString();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.STRING) {
+        this.attribute = input.readString();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+VISTAS_getTextureMap_args.prototype.write = function(output) {
+  output.writeStructBegin('VISTAS_getTextureMap_args');
+  if (this.fileName !== null && this.fileName !== undefined) {
+    output.writeFieldBegin('fileName', Thrift.Type.STRING, 1);
+    output.writeString(this.fileName);
+    output.writeFieldEnd();
+  }
+  if (this.attribute !== null && this.attribute !== undefined) {
+    output.writeFieldBegin('attribute', Thrift.Type.STRING, 2);
+    output.writeString(this.attribute);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+VISTAS_getTextureMap_result = function(args) {
+  this.success = null;
+  if (args) {
+    if (args.success !== undefined) {
+      this.success = args.success;
+    }
+  }
+};
+VISTAS_getTextureMap_result.prototype = {};
+VISTAS_getTextureMap_result.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.success = new ttypes.Texture();
+        this.success.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+VISTAS_getTextureMap_result.prototype.write = function(output) {
+  output.writeStructBegin('VISTAS_getTextureMap_result');
+  if (this.success !== null && this.success !== undefined) {
+    output.writeFieldBegin('success', Thrift.Type.STRUCT, 0);
+    this.success.write(output);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+VISTAS_getAttributes_args = function(args) {
+  this.fileName = null;
+  if (args) {
+    if (args.fileName !== undefined) {
+      this.fileName = args.fileName;
+    }
+  }
+};
+VISTAS_getAttributes_args.prototype = {};
+VISTAS_getAttributes_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.STRING) {
+        this.fileName = input.readString();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+VISTAS_getAttributes_args.prototype.write = function(output) {
+  output.writeStructBegin('VISTAS_getAttributes_args');
+  if (this.fileName !== null && this.fileName !== undefined) {
+    output.writeFieldBegin('fileName', Thrift.Type.STRING, 1);
+    output.writeString(this.fileName);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+VISTAS_getAttributes_result = function(args) {
+  this.success = null;
+  if (args) {
+    if (args.success !== undefined) {
+      this.success = args.success;
+    }
+  }
+};
+VISTAS_getAttributes_result.prototype = {};
+VISTAS_getAttributes_result.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+      if (ftype == Thrift.Type.LIST) {
+        var _size40 = 0;
+        var _rtmp344;
+        this.success = [];
+        var _etype43 = 0;
+        _rtmp344 = input.readListBegin();
+        _etype43 = _rtmp344.etype;
+        _size40 = _rtmp344.size;
+        for (var _i45 = 0; _i45 < _size40; ++_i45)
+        {
+          var elem46 = null;
+          elem46 = input.readString();
+          this.success.push(elem46);
+        }
+        input.readListEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+VISTAS_getAttributes_result.prototype.write = function(output) {
+  output.writeStructBegin('VISTAS_getAttributes_result');
+  if (this.success !== null && this.success !== undefined) {
+    output.writeFieldBegin('success', Thrift.Type.LIST, 0);
+    output.writeListBegin(Thrift.Type.STRING, this.success.length);
+    for (var iter47 in this.success)
+    {
+      if (this.success.hasOwnProperty(iter47))
+      {
+        iter47 = this.success[iter47];
+        output.writeString(iter47);
+      }
+    }
+    output.writeListEnd();
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+VISTAS_getDatasets_args = function(args) {
+};
+VISTAS_getDatasets_args.prototype = {};
+VISTAS_getDatasets_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    input.skip(ftype);
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+VISTAS_getDatasets_args.prototype.write = function(output) {
+  output.writeStructBegin('VISTAS_getDatasets_args');
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+VISTAS_getDatasets_result = function(args) {
+  this.success = null;
+  if (args) {
+    if (args.success !== undefined) {
+      this.success = args.success;
+    }
+  }
+};
+VISTAS_getDatasets_result.prototype = {};
+VISTAS_getDatasets_result.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+      if (ftype == Thrift.Type.LIST) {
+        var _size48 = 0;
+        var _rtmp352;
+        this.success = [];
+        var _etype51 = 0;
+        _rtmp352 = input.readListBegin();
+        _etype51 = _rtmp352.etype;
+        _size48 = _rtmp352.size;
+        for (var _i53 = 0; _i53 < _size48; ++_i53)
+        {
+          var elem54 = null;
+          elem54 = input.readString();
+          this.success.push(elem54);
+        }
+        input.readListEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 0:
+        input.skip(ftype);
+        break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+VISTAS_getDatasets_result.prototype.write = function(output) {
+  output.writeStructBegin('VISTAS_getDatasets_result');
+  if (this.success !== null && this.success !== undefined) {
+    output.writeFieldBegin('success', Thrift.Type.LIST, 0);
+    output.writeListBegin(Thrift.Type.STRING, this.success.length);
+    for (var iter55 in this.success)
+    {
+      if (this.success.hasOwnProperty(iter55))
+      {
+        iter55 = this.success[iter55];
+        output.writeString(iter55);
+      }
+    }
+    output.writeListEnd();
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
 VISTASClient = exports.Client = function(output, pClass) {
     this.output = output;
     this.pClass = pClass;
@@ -156,6 +756,177 @@ VISTASClient.prototype.recv_getTerrain = function(input,mtype,rseqid) {
   }
   return callback('getTerrain failed: unknown result');
 };
+VISTASClient.prototype.getColor = function(fileName, attribute, callback) {
+  this.seqid += 1;
+  this._reqs[this.seqid] = callback;
+  this.send_getColor(fileName, attribute);
+};
+
+VISTASClient.prototype.send_getColor = function(fileName, attribute) {
+  var output = new this.pClass(this.output);
+  output.writeMessageBegin('getColor', Thrift.MessageType.CALL, this.seqid);
+  var args = new VISTAS_getColor_args();
+  args.fileName = fileName;
+  args.attribute = attribute;
+  args.write(output);
+  output.writeMessageEnd();
+  return this.output.flush();
+};
+
+VISTASClient.prototype.recv_getColor = function(input,mtype,rseqid) {
+  var callback = this._reqs[rseqid] || function() {};
+  delete this._reqs[rseqid];
+  if (mtype == Thrift.MessageType.EXCEPTION) {
+    var x = new Thrift.TApplicationException();
+    x.read(input);
+    input.readMessageEnd();
+    return callback(x);
+  }
+  var result = new VISTAS_getColor_result();
+  result.read(input);
+  input.readMessageEnd();
+
+  if (null !== result.success) {
+    return callback(null, result.success);
+  }
+  return callback('getColor failed: unknown result');
+};
+VISTASClient.prototype.getNormalMap = function(fileName, callback) {
+  this.seqid += 1;
+  this._reqs[this.seqid] = callback;
+  this.send_getNormalMap(fileName);
+};
+
+VISTASClient.prototype.send_getNormalMap = function(fileName) {
+  var output = new this.pClass(this.output);
+  output.writeMessageBegin('getNormalMap', Thrift.MessageType.CALL, this.seqid);
+  var args = new VISTAS_getNormalMap_args();
+  args.fileName = fileName;
+  args.write(output);
+  output.writeMessageEnd();
+  return this.output.flush();
+};
+
+VISTASClient.prototype.recv_getNormalMap = function(input,mtype,rseqid) {
+  var callback = this._reqs[rseqid] || function() {};
+  delete this._reqs[rseqid];
+  if (mtype == Thrift.MessageType.EXCEPTION) {
+    var x = new Thrift.TApplicationException();
+    x.read(input);
+    input.readMessageEnd();
+    return callback(x);
+  }
+  var result = new VISTAS_getNormalMap_result();
+  result.read(input);
+  input.readMessageEnd();
+
+  if (null !== result.success) {
+    return callback(null, result.success);
+  }
+  return callback('getNormalMap failed: unknown result');
+};
+VISTASClient.prototype.getTextureMap = function(fileName, attribute, callback) {
+  this.seqid += 1;
+  this._reqs[this.seqid] = callback;
+  this.send_getTextureMap(fileName, attribute);
+};
+
+VISTASClient.prototype.send_getTextureMap = function(fileName, attribute) {
+  var output = new this.pClass(this.output);
+  output.writeMessageBegin('getTextureMap', Thrift.MessageType.CALL, this.seqid);
+  var args = new VISTAS_getTextureMap_args();
+  args.fileName = fileName;
+  args.attribute = attribute;
+  args.write(output);
+  output.writeMessageEnd();
+  return this.output.flush();
+};
+
+VISTASClient.prototype.recv_getTextureMap = function(input,mtype,rseqid) {
+  var callback = this._reqs[rseqid] || function() {};
+  delete this._reqs[rseqid];
+  if (mtype == Thrift.MessageType.EXCEPTION) {
+    var x = new Thrift.TApplicationException();
+    x.read(input);
+    input.readMessageEnd();
+    return callback(x);
+  }
+  var result = new VISTAS_getTextureMap_result();
+  result.read(input);
+  input.readMessageEnd();
+
+  if (null !== result.success) {
+    return callback(null, result.success);
+  }
+  return callback('getTextureMap failed: unknown result');
+};
+VISTASClient.prototype.getAttributes = function(fileName, callback) {
+  this.seqid += 1;
+  this._reqs[this.seqid] = callback;
+  this.send_getAttributes(fileName);
+};
+
+VISTASClient.prototype.send_getAttributes = function(fileName) {
+  var output = new this.pClass(this.output);
+  output.writeMessageBegin('getAttributes', Thrift.MessageType.CALL, this.seqid);
+  var args = new VISTAS_getAttributes_args();
+  args.fileName = fileName;
+  args.write(output);
+  output.writeMessageEnd();
+  return this.output.flush();
+};
+
+VISTASClient.prototype.recv_getAttributes = function(input,mtype,rseqid) {
+  var callback = this._reqs[rseqid] || function() {};
+  delete this._reqs[rseqid];
+  if (mtype == Thrift.MessageType.EXCEPTION) {
+    var x = new Thrift.TApplicationException();
+    x.read(input);
+    input.readMessageEnd();
+    return callback(x);
+  }
+  var result = new VISTAS_getAttributes_result();
+  result.read(input);
+  input.readMessageEnd();
+
+  if (null !== result.success) {
+    return callback(null, result.success);
+  }
+  return callback('getAttributes failed: unknown result');
+};
+VISTASClient.prototype.getDatasets = function(callback) {
+  this.seqid += 1;
+  this._reqs[this.seqid] = callback;
+  this.send_getDatasets();
+};
+
+VISTASClient.prototype.send_getDatasets = function() {
+  var output = new this.pClass(this.output);
+  output.writeMessageBegin('getDatasets', Thrift.MessageType.CALL, this.seqid);
+  var args = new VISTAS_getDatasets_args();
+  args.write(output);
+  output.writeMessageEnd();
+  return this.output.flush();
+};
+
+VISTASClient.prototype.recv_getDatasets = function(input,mtype,rseqid) {
+  var callback = this._reqs[rseqid] || function() {};
+  delete this._reqs[rseqid];
+  if (mtype == Thrift.MessageType.EXCEPTION) {
+    var x = new Thrift.TApplicationException();
+    x.read(input);
+    input.readMessageEnd();
+    return callback(x);
+  }
+  var result = new VISTAS_getDatasets_result();
+  result.read(input);
+  input.readMessageEnd();
+
+  if (null !== result.success) {
+    return callback(null, result.success);
+  }
+  return callback('getDatasets failed: unknown result');
+};
 VISTASProcessor = exports.Processor = function(handler) {
   this._handler = handler
 }
@@ -181,6 +952,71 @@ VISTASProcessor.prototype.process_getTerrain = function(seqid, input, output) {
   this._handler.getTerrain(args.fileName, function (err, result) {
     var result = new VISTAS_getTerrain_result((err != null ? err : {success: result}));
     output.writeMessageBegin("getTerrain", Thrift.MessageType.REPLY, seqid);
+    result.write(output);
+    output.writeMessageEnd();
+    output.flush();
+  })
+}
+
+VISTASProcessor.prototype.process_getColor = function(seqid, input, output) {
+  var args = new VISTAS_getColor_args();
+  args.read(input);
+  input.readMessageEnd();
+  this._handler.getColor(args.fileName, args.attribute, function (err, result) {
+    var result = new VISTAS_getColor_result((err != null ? err : {success: result}));
+    output.writeMessageBegin("getColor", Thrift.MessageType.REPLY, seqid);
+    result.write(output);
+    output.writeMessageEnd();
+    output.flush();
+  })
+}
+
+VISTASProcessor.prototype.process_getNormalMap = function(seqid, input, output) {
+  var args = new VISTAS_getNormalMap_args();
+  args.read(input);
+  input.readMessageEnd();
+  this._handler.getNormalMap(args.fileName, function (err, result) {
+    var result = new VISTAS_getNormalMap_result((err != null ? err : {success: result}));
+    output.writeMessageBegin("getNormalMap", Thrift.MessageType.REPLY, seqid);
+    result.write(output);
+    output.writeMessageEnd();
+    output.flush();
+  })
+}
+
+VISTASProcessor.prototype.process_getTextureMap = function(seqid, input, output) {
+  var args = new VISTAS_getTextureMap_args();
+  args.read(input);
+  input.readMessageEnd();
+  this._handler.getTextureMap(args.fileName, args.attribute, function (err, result) {
+    var result = new VISTAS_getTextureMap_result((err != null ? err : {success: result}));
+    output.writeMessageBegin("getTextureMap", Thrift.MessageType.REPLY, seqid);
+    result.write(output);
+    output.writeMessageEnd();
+    output.flush();
+  })
+}
+
+VISTASProcessor.prototype.process_getAttributes = function(seqid, input, output) {
+  var args = new VISTAS_getAttributes_args();
+  args.read(input);
+  input.readMessageEnd();
+  this._handler.getAttributes(args.fileName, function (err, result) {
+    var result = new VISTAS_getAttributes_result((err != null ? err : {success: result}));
+    output.writeMessageBegin("getAttributes", Thrift.MessageType.REPLY, seqid);
+    result.write(output);
+    output.writeMessageEnd();
+    output.flush();
+  })
+}
+
+VISTASProcessor.prototype.process_getDatasets = function(seqid, input, output) {
+  var args = new VISTAS_getDatasets_args();
+  args.read(input);
+  input.readMessageEnd();
+  this._handler.getDatasets(function (err, result) {
+    var result = new VISTAS_getDatasets_result((err != null ? err : {success: result}));
+    output.writeMessageBegin("getDatasets", Thrift.MessageType.REPLY, seqid);
     result.write(output);
     output.writeMessageEnd();
     output.flush();
