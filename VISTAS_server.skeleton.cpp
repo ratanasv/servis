@@ -13,12 +13,14 @@
 #include <vector>
 #include <stdexcept>
 #include <algorithm>
+#include <set>
 
 #ifdef MACOSX
 const VI_String DATA_PREFIX = VI_String("/Users/ratanasv/Documents/data/");
 #else
 const VI_String DATA_PREFIX = VI_String("/home/ubuntu/data/");
 #endif
+const VI_String SHP_EXTENSION = VI_String("shp");
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -26,8 +28,20 @@ using namespace ::apache::thrift::transport;
 using namespace ::apache::thrift::server;
 
 using std::tr1::shared_ptr;
-
+using std::vector;
+using std::find_if;
+using std::set;
 using namespace  ::servis;
+
+class FindIfExtensionFound {
+private:
+    const VI_String extension;
+public:
+    FindIfExtensionFound(const VI_String& in) : extension(in) {};
+    bool operator() (const VI_Path& element) {
+        return element.GetExtension() == extension;
+    }
+};
 
 
 class VISTASHandler : virtual public VISTASIf {
@@ -85,10 +99,17 @@ public:
 
 	virtual void getAttributes(std::vector<std::string> & _return, const std::string& fileName) {
 		printf("getAttributes %s \n", fileName.c_str());
-		shared_ptr<EnvisionDataPlugin> envisionPlugin(new EnvisionDataPlugin());
-		const VI_Path pathToShp = VI_Path(DATA_PREFIX + VI_String(fileName));
-		envisionPlugin->Set(pathToShp);
-		auto attributeList = envisionPlugin->GetAttributes();
+		shared_ptr<VI_DataPlugin> dataPlugin;
+		const VI_Path pathToFile = VI_Path(DATA_PREFIX + VI_String(fileName));
+		auto datasetsList = pathToFile.GetFiles();
+        auto foundFile = find_if(datasetsList.begin(), datasetsList.end(), FindIfExtensionFound(SHP_EXTENSION));
+        if (foundFile != datasetsList.end()) {
+            dataPlugin.reset(new EnvisionDataPlugin());
+        } else {
+            dataPlugin.reset();
+        }
+		dataPlugin->Set(*foundFile);
+		auto attributeList = dataPlugin->GetAttributes();
 		_return.insert(_return.begin(), attributeList.begin(), attributeList.end());
 	}
 

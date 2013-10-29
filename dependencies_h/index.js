@@ -12,13 +12,14 @@ function getOnThriftCallBack(response, connection) {
         var payload;
         if (err) {
             console.error(err);
+            response.writeHead(500, {"Content-Type": "application/javascript"});
         } else {
             response.writeHead(200, {"Content-Type": "application/javascript"});
             payload = querystring.callback + '(' + JSON.stringify(data) + ');';
             response.write(payload);
-            connection.end();
-            response.end();
         }
+        connection.end();
+        response.end();
     }
 }
 
@@ -30,9 +31,11 @@ function jsonpHandler(req, res) {
 
     connection.on('error', function(err) {
         console.error(err);
+        res.writeHead(503, {"Content-Type": "application/javascript"});
+        res.end();
     });
     onThriftCallBack = getOnThriftCallBack(res, connection);
-
+    console.log(url.parse(req.url).query);
     console.log('ip=' + req.connection.remoteAddress + ' queryString=' + JSON.stringify(queryString));
 
     switch(queryString.method) {
@@ -49,7 +52,7 @@ function jsonpHandler(req, res) {
         client.getTextureMap(queryString.fileName, onThriftCallBack);
         break;
     case 'getAttributes':
-        client.getAttriutes(queryString.fileName, onThriftCallBack);
+        client.getAttributes(queryString.fileName, onThriftCallBack);
         break;
     case 'getDatasets':
         client.getDatasets(onThriftCallBack);
