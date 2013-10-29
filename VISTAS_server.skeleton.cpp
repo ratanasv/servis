@@ -12,6 +12,7 @@
 #include <Envision.h>
 #include <vector>
 #include <stdexcept>
+#include <algorithm>
 
 #ifdef MACOSX
 const VI_String DATA_PREFIX = VI_String("/Users/ratanasv/Documents/data/");
@@ -27,6 +28,8 @@ using namespace ::apache::thrift::server;
 using std::tr1::shared_ptr;
 
 using namespace  ::servis;
+
+
 class VISTASHandler : virtual public VISTASIf {
 public:
 	VISTASHandler() {
@@ -90,8 +93,12 @@ public:
 	}
 
 	virtual void getDatasets(std::vector<std::string> & _return) {
-		// Your implementation goes here
 		printf("getDatasets\n");
+		VI_Path datasetsRoot(DATA_PREFIX);
+		auto datasetsList = datasetsRoot.GetFiles();
+		for (auto it : datasetsList) {
+			_return.push_back(it.GetElement(-1).c_str());
+		}
 	}
 
 };
