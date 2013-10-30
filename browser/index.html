@@ -23,10 +23,11 @@
             function getData() {
                 var queryObject = {
                     method: 'getTerrain',
-                    fileName: 'blah'
+                    fileName: 'easternOregon'
                 };
                 $.ajax({
-                    url: servisHost + '?' + JSON.stringify(queryObject),
+                    url: servisHost,
+                    data: queryObject,
                     dataType: 'jsonp',
                     success: function(res) {
                         data = res;

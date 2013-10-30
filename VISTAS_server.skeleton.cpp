@@ -31,13 +31,15 @@ using std::tr1::shared_ptr;
 using std::vector;
 using std::find_if;
 using std::set;
+using std::runtime_error;
 using namespace  ::servis;
+using std::pair;
 
-class FindIfExtensionFound {
+class FindIfExtension {
 private:
     const VI_String extension;
 public:
-    FindIfExtensionFound(const VI_String& in) : extension(in) {};
+    FindIfExtension(const VI_String& in) : extension(in) {};
     bool operator() (const VI_Path& element) {
         return element.GetExtension() == extension;
     }
@@ -46,20 +48,36 @@ public:
 
 class VISTASHandler : virtual public VISTASIf {
 public:
+	typedef pair<shared_ptr<VI_DataPlugin>, shared_ptr<VI_VizPlugin3D>> PluginPair;
 	VISTASHandler() {
 		// Your initialization goes here
 	}
 
+	PluginPair getPlugins(const std::string& fileName) {
+		shared_ptr<VI_DataPlugin> dataPlugin;
+		shared_ptr<VI_VizPlugin3D> vizPlugin;
+		const VI_Path pathToFile = VI_Path(DATA_PREFIX + VI_String(fileName));
+		auto datasetsList = pathToFile.GetFiles();
+		auto foundFile = find_if(datasetsList.begin(), datasetsList.end(), FindIfExtension(SHP_EXTENSION));
+		if (foundFile != datasetsList.end()) {
+			dataPlugin.reset(new EnvisionDataPlugin());
+			dataPlugin->Set(*foundFile);
+			vizPlugin.reset(new SHP3D());
+			vizPlugin->SetData(dataPlugin.get(), 0);
+		} else {
+			dataPlugin.reset();
+			throw runtime_error("velma plugin not supported");
+		}
+		return PluginPair(dataPlugin, vizPlugin);
+	}
+
 	virtual void getTerrain(Terrain& _return, const std::string& fileName) {
 		// Your implementation goes here
-		printf("getTerrain\n %s", fileName.c_str());
-		shared_ptr<SHP3D> shp3dPlugin(new SHP3D());
-		shared_ptr<EnvisionDataPlugin> envisionPlugin(new EnvisionDataPlugin());
-		const VI_Path pathToShp = VI_Path(DATA_PREFIX + VI_String("eastern_oregon/idu3D.shp"));
-		envisionPlugin->Set(pathToShp);
-		shp3dPlugin->SetData(envisionPlugin.get(), 0);
-		shp3dPlugin->SetAttribute(VI_String("LULC_A"));
-		auto shapeMesh = shp3dPlugin->GetMesh();
+		printf("getTerrain %s\n", fileName.c_str());
+		auto plugins = getPlugins(fileName);
+		auto vizPlugin = plugins.second;
+		auto dataPlugin = plugins.first;
+		auto shapeMesh = vizPlugin->GetMesh();
 		auto vertexCount = shapeMesh.GetVertexCount();
 		auto indexCount = shapeMesh.GetIndexCount();
 
@@ -84,7 +102,24 @@ public:
 
 	virtual void getColor(std::vector<V3> & _return, const std::string& fileName, const std::string& attribute) {
 		// Your implementation goes here
-		printf("getColor\n %s %s", fileName.c_str(), attribute.c_str());
+		printf("getColor %s %s \n", fileName.c_str(), attribute.c_str());
+		auto plugins = getPlugins(fileName);
+		auto vizPlugin = std::tr1::dynamic_pointer_cast<SHP3D>(plugins.second);
+		vizPlugin->SetAttribute(attribute);
+
+		auto shapeMesh = vizPlugin->GetMesh();
+		auto vertexCount = shapeMesh.GetVertexCount();
+
+		_return.reserve(vertexCount);
+		float* colorPtr = shapeMesh.AcquireColorArray();
+		for (int i=0; i<vertexCount; i++) {
+			double x = (double)colorPtr[3*i+0];
+			double y = (double)colorPtr[3*i+1];
+			double z = (double)colorPtr[3*i+2];
+			_return.push_back(V3(x,y,z));
+		}
+		shapeMesh.ReleaseColorArray();
+
 	}
 
 	virtual void getNormalMap(Texture& _return, const std::string& fileName) {
@@ -102,11 +137,12 @@ public:
 		shared_ptr<VI_DataPlugin> dataPlugin;
 		const VI_Path pathToFile = VI_Path(DATA_PREFIX + VI_String(fileName));
 		auto datasetsList = pathToFile.GetFiles();
-        auto foundFile = find_if(datasetsList.begin(), datasetsList.end(), FindIfExtensionFound(SHP_EXTENSION));
+        auto foundFile = find_if(datasetsList.begin(), datasetsList.end(), FindIfExtension(SHP_EXTENSION));
         if (foundFile != datasetsList.end()) {
             dataPlugin.reset(new EnvisionDataPlugin());
         } else {
             dataPlugin.reset();
+			throw runtime_error("velma plugin not supported");
         }
 		dataPlugin->Set(*foundFile);
 		auto attributeList = dataPlugin->GetAttributes();

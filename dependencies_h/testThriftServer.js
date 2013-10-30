@@ -10,35 +10,58 @@ var servis_types = require('./gen-nodejs/servis_types.js'),
 
 function arrays_equal(a,b) { return !(a<b || b<a); }
 
-exports['test_getDatasets'] = function(beforeExit, assert) {
-    var connection = thrift.createConnection('localhost', 9090);
-    var client = thrift.createClient(VISTAS, connection);
-    client.getDatasets(function(err, data) {
-        if (err) {
-            console.error(err);
-            throw err;
-        } else {
-            assert.ok(arrays_equal([1,2,3], [1,2,3]));
-            assert.ok(arrays_equal(data.sort(), ['easternOregon', 'chesapeakeBay', 'eugene'].sort()));
-            connection.end();
+function testBoilerPlate(test, args, verify) {
+    return function(beforeExit, assert) {
+        var connection = thrift.createConnection('localhost', 9090);
+        var client = thrift.createClient(VISTAS, connection);
+        var done = false;
+        var callbackVerify = function(err, data) {
+            if (err) {
+                console.error(err);
+                throw err;
+            } else {
+                verify(assert, data);
+                connection.end();
+            }
+            done = true;
+        };
 
-        }
-    });
+        args.push(callbackVerify);
+        client[test].apply(client, args);
 
+        beforeExit(function() {
+            assert.ok(done, test + ' hasnt been executed');
+        });
+    };
 }
 
-exports['test_getAttributes'] = function(beforeExit, assert) {
-    var connection = thrift.createConnection('localhost', 9090);
-    var client = thrift.createClient(VISTAS, connection);
-    client.getAttributes('eastern_oregon', function(err, data) {
-        if (err) {
-            console.error(err);
-            throw err;
-        } else {
-            assert.notEqual(-1, _.indexOf(data, 'LULC_A'));
-            connection.end();
+exports['test_getDatasets'] = testBoilerPlate('getDatasets', [], function(assert, data) {
+    assert.ok(arrays_equal(data.sort(), ['easternOregon', 'eugene', 'chesapeakeBay'].sort()));
+});
 
-        }
-    });
+exports['test_getAttributes'] = testBoilerPlate('getAttributes', ['easternOregon'], function(assert, data){
+    assert.notEqual(-1, _.indexOf(data, 'LULC_A'));
+    assert.notEqual(-1, _.indexOf(data, 'LULC_B'));
+});
 
-}
+exports['test_getTerrain'] = testBoilerPlate('getTerrain', ['easternOregon'], function(assert, data) {
+    assert.equal(64755, data.vertices.length);
+    assert.equal(142563, data.indices.length);
+});
+
+exports['test_getColorA'] = testBoilerPlate('getColor', ['easternOregon', 'LULC_A'], function(assert, data) {
+    assert.equal(64755, data.length);
+});
+
+exports['test_getColorB'] = testBoilerPlate('getColor', ['easternOregon', 'LULC_B'], function(assert, data) {
+    assert.equal(64755, data.length);
+});
+
+exports['test_getColorC'] = testBoilerPlate('getColor', ['easternOregon', 'LULC_C'], function(assert, data) {
+    assert.equal(64755, data.length);
+});
+
+
+
+
+
