@@ -35,7 +35,6 @@ function jsonpHandler(req, res) {
         res.end();
     });
     onThriftCallBack = getOnThriftCallBack(res, connection);
-    console.log(url.parse(req.url).query);
     console.log('ip=' + req.connection.remoteAddress + ' queryString=' + JSON.stringify(queryString));
 
     switch(queryString.method) {
@@ -56,6 +55,9 @@ function jsonpHandler(req, res) {
         break;
     case 'getDatasets':
         client.getDatasets(onThriftCallBack);
+        break;
+    default:
+        throw 'method not supported:' + queryString.method;
         break;
     }
 }
