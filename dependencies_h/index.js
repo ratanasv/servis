@@ -7,7 +7,7 @@ var url = require('url');
 var servis_types = require('./gen-nodejs/servis_types.js'),
     VISTAS = require('./gen-nodejs/VISTAS.js');
 
-function getOnThriftCallBack(response, connection) {
+function getOnThriftCallBack(response, connection, queryString) {
     return function(err, data) {
         var payload;
         if (err) {
@@ -15,7 +15,7 @@ function getOnThriftCallBack(response, connection) {
             response.writeHead(500, {"Content-Type": "application/javascript"});
         } else {
             response.writeHead(200, {"Content-Type": "application/javascript"});
-            payload = querystring.callback + '(' + JSON.stringify(data) + ');';
+            payload = queryString.callback + '(' + JSON.stringify(data) + ');';
             response.write(payload);
         }
         connection.end();
@@ -34,7 +34,7 @@ function jsonpHandler(req, res) {
         res.writeHead(503, {"Content-Type": "application/javascript"});
         res.end();
     });
-    onThriftCallBack = getOnThriftCallBack(res, connection);
+    onThriftCallBack = getOnThriftCallBack(res, connection, queryString);
     console.log('ip=' + req.connection.remoteAddress + ' queryString=' + JSON.stringify(queryString));
 
     switch(queryString.method) {
@@ -57,7 +57,8 @@ function jsonpHandler(req, res) {
         client.getDatasets(onThriftCallBack);
         break;
     default:
-        throw 'method not supported:' + queryString.method;
+        console.log('method:' + queryString.method + 'not supported');
+        res.writeHead(503, {"Content-Type": "application/javascript"});
         break;
     }
 }

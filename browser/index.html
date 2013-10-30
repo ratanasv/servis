@@ -7,7 +7,6 @@
     <body>
         <div id="container"></div>
         <script src="http://web.engr.oregonstate.edu/~ratanasv/WebGL-Inspector/core/embed.js"></script>
-        <script src="http://code.angularjs.org/1.2.0-rc.3/angular.js"></script>
         <script src=http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js></script>>
         <script src="http://web.engr.oregonstate.edu/~ratanasv/threejs/build/three.js"></script>
         <script src="http://web.engr.oregonstate.edu/~ratanasv/threejs/examples/js/libs/stats.min.js"></script>
@@ -27,7 +26,8 @@
                     fileName: 'easternOregon'
                 };
                 $.ajax({
-                    url: servisHost + '?' + JSON.stringify(queryObject),
+                    url: servisHost,
+                    data: queryObject,
                     dataType: 'jsonp',
                     success: function(res) {
                         data = res;
