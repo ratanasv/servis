@@ -73,7 +73,7 @@ public:
 
 	virtual void getTerrain(Terrain& _return, const std::string& fileName) {
 		// Your implementation goes here
-		printf("getTerrain\n %s", fileName.c_str());
+		printf("getTerrain %s\n", fileName.c_str());
 		auto plugins = getPlugins(fileName);
 		auto vizPlugin = plugins.second;
 		auto dataPlugin = plugins.first;
@@ -102,7 +102,24 @@ public:
 
 	virtual void getColor(std::vector<V3> & _return, const std::string& fileName, const std::string& attribute) {
 		// Your implementation goes here
-		printf("getColor\n %s %s", fileName.c_str(), attribute.c_str());
+		printf("getColor %s %s \n", fileName.c_str(), attribute.c_str());
+		auto plugins = getPlugins(fileName);
+		auto vizPlugin = std::tr1::dynamic_pointer_cast<SHP3D>(plugins.second);
+		vizPlugin->SetAttribute(attribute);
+
+		auto shapeMesh = vizPlugin->GetMesh();
+		auto vertexCount = shapeMesh.GetVertexCount();
+
+		_return.reserve(vertexCount);
+		float* colorPtr = shapeMesh.AcquireColorArray();
+		for (int i=0; i<vertexCount; i++) {
+			double x = (double)colorPtr[3*i+0];
+			double y = (double)colorPtr[3*i+1];
+			double z = (double)colorPtr[3*i+2];
+			_return.push_back(V3(x,y,z));
+		}
+		shapeMesh.ReleaseColorArray();
+
 	}
 
 	virtual void getNormalMap(Texture& _return, const std::string& fileName) {

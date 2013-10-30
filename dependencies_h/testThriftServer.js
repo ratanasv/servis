@@ -22,8 +22,8 @@ function testBoilerPlate(test, args, verify) {
             } else {
                 verify(assert, data);
                 connection.end();
-                done = true;
             }
+            done = true;
         };
 
         args.push(callbackVerify);
@@ -45,8 +45,23 @@ exports['test_getAttributes'] = testBoilerPlate('getAttributes', ['easternOregon
 });
 
 exports['test_getTerrain'] = testBoilerPlate('getTerrain', ['easternOregon'], function(assert, data) {
-    assert.equal(64755*3, data.vertices.length);
+    assert.equal(64755, data.vertices.length);
     assert.equal(142563, data.indices.length);
 });
+
+exports['test_getColorA'] = testBoilerPlate('getColor', ['easternOregon', 'LULC_A'], function(assert, data) {
+    assert.equal(64755, data.length);
+});
+
+exports['test_getColorB'] = testBoilerPlate('getColor', ['easternOregon', 'LULC_B'], function(assert, data) {
+    assert.equal(64755, data.length);
+});
+
+exports['test_getColorC'] = testBoilerPlate('getColor', ['easternOregon', 'LULC_C'], function(assert, data) {
+    assert.equal(64755, data.length);
+});
+
+
+
 
 
