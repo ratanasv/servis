@@ -10,6 +10,8 @@
 #include <vistas/vistas.h>
 #include <SHP3D.h>
 #include <Envision.h>
+#include <ESRIGridASCII.h>
+#include <TerrainAndColor.h>
 #include <vector>
 #include <stdexcept>
 #include <algorithm>
@@ -21,6 +23,7 @@ const VI_String DATA_PREFIX = VI_String("/Users/ratanasv/Documents/data/");
 const VI_String DATA_PREFIX = VI_String("/home/ubuntu/data/");
 #endif
 const VI_String SHP_EXTENSION = VI_String("shp");
+const VI_String ESRIGRIDASCII_EXTENSION = VI_String("asc");
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -60,13 +63,29 @@ public:
 		auto datasetsList = pathToFile.GetFiles();
 		auto foundFile = find_if(datasetsList.begin(), datasetsList.end(), FindIfExtension(SHP_EXTENSION));
 		if (foundFile != datasetsList.end()) {
+			
 			dataPlugin.reset(new EnvisionDataPlugin());
 			dataPlugin->Set(*foundFile);
 			vizPlugin.reset(new SHP3D());
 			vizPlugin->SetData(dataPlugin.get(), 0);
 		} else {
-			dataPlugin.reset();
-			throw runtime_error("velma plugin not supported");
+			foundFile = find_if(datasetsList.begin(), datasetsList.end(), [](const VI_Path& path) {
+				bool isDEM = path.GetElement(-1).Find(VI_String("DEM")) != -1;
+				return path.GetExtension() == ESRIGRIDASCII_EXTENSION && !isDEM;
+			});
+			dataPlugin.reset(new ESRIGridPlugin());
+			dataPlugin->Set(*foundFile);
+			
+			auto demFile = find_if(datasetsList.begin(), datasetsList.end(), [](const VI_Path& path) {
+				bool isDEM = path.GetElement(-1).Find(VI_String("DEM")) != -1;
+				return path.GetExtension() == ESRIGRIDASCII_EXTENSION && isDEM;
+			});
+			shared_ptr<VI_DataPlugin> demPlugin(new ESRIGridPlugin());
+			demPlugin->Set(*demFile);
+
+			vizPlugin.reset(new TerrainPlugin());
+			vizPlugin->SetData(demPlugin.get(), 0); //for DEM
+			vizPlugin->SetData(dataPlugin.get(), 1);
 		}
 		return PluginPair(dataPlugin, vizPlugin);
 	}

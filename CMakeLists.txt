@@ -35,6 +35,8 @@ target_link_libraries(servis thrift)
 target_link_libraries(servis CORE)
 target_link_libraries(servis SHP3D)
 target_link_libraries(servis ENVISION)
+target_link_libraries(servis TANDC)
+target_link_libraries(servis ESRIGRID)
 
 
 
