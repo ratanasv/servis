@@ -35,7 +35,7 @@ function jsonpHandler(req, res) {
         res.end();
     });
     onThriftCallBack = getOnThriftCallBack(res, connection, queryString);
-    console.log('ip=' + req.connection.remoteAddress + ' queryString=' + JSON.stringify(queryString));
+    console.log(new Date().toLocaleString() + ' ip=' + req.connection.remoteAddress + ' queryString=' + JSON.stringify(queryString));
 
     switch(queryString.method) {
     case 'getTerrain':
@@ -57,8 +57,10 @@ function jsonpHandler(req, res) {
         client.getDatasets(onThriftCallBack);
         break;
     default:
-        console.log('method:' + queryString.method + 'not supported');
+        console.log('method:' + queryString.method + ' not supported');
         res.writeHead(503, {"Content-Type": "application/javascript"});
+        res.end();
+        connection.end();
         break;
     }
 }

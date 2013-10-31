@@ -1,19 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html ng-app>
     <head>
         <title>VISTAS WebGL</title>
-
-    </head>
-    <body>
-        <div id="container"></div>
         <script src="http://web.engr.oregonstate.edu/~ratanasv/WebGL-Inspector/core/embed.js"></script>
-        <script src=http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js></script>>
+        <script src=http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.js></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.js"></script>
         <script src="http://web.engr.oregonstate.edu/~ratanasv/threejs/build/three.js"></script>
         <script src="http://web.engr.oregonstate.edu/~ratanasv/threejs/examples/js/libs/stats.min.js"></script>
-        <script src="http://web.engr.oregonstate.edu/~ratanasv/threejs/examples/js/controls/TrackballControls.js"></script>
+        <script src="http://web.engr.oregonstate.edu/~ratanasv/threejs/examples/js/controls/OrbitControls.js"></script>
         <script>
             var servisHost = 'http://54.200.144.27:8888';
-            var container, stats;
+            var container, stats, info;
             var camera, scene, renderer, controls;
             var mesh, geometry;
             var data;
@@ -25,16 +22,12 @@
                     method: 'getTerrain',
                     fileName: 'easternOregon'
                 };
-                $.ajax({
-                    url: servisHost,
-                    data: queryObject,
-                    dataType: 'jsonp',
-                    success: function(res) {
-                        data = res;
-                        init();
-                        animate();
-                    }
-                });
+                var callback = function(res) {
+                    data = res;
+                    init();
+                    animate();
+                };
+                makeServisRequest(queryObject, callback);
             }
 
             function addGeometryAttributes(geometry) {
@@ -74,34 +67,86 @@
                 light0.position.z = 0.0;
             }
 
+            function makeServisRequest(query, callback) {
+                $.ajax({
+                    url: servisHost,
+                    data: query,
+                    dataType: 'jsonp',
+                    success: callback
+                });
+            }
+
+            function ngAttributeController($scope, $http) {
+                $scope.attributes = [{
+                    label: 'none'
+                }];
+                $scope.attribute = $scope.attributes[0];
+
+                /*$scope.refreshAttribute = function() {
+                    var queryObject = {
+                        method: 'getAttributes',
+                        fileName: 'easternOregon'
+                    };
+                    var callback = function(res) {
+                        $scope.attributes = [];
+                        for (var i=0; i<res.length; i++) {
+                            $scope.attributes.push({
+                                label: res[i]
+                            });
+                        }
+                        $scope.attribute = $scope.attributes[0];
+                    }
+                    makeServisRequest(queryObject, callback);
+                }*/
+                $scope.refreshAttribute = function() {
+                    $http({
+                        method: 'GET',
+                        url: servisHost,
+                        data: {
+                            method: 'getAttributes',
+                            fileName: 'easternOregon'
+                        },
+                        dataType: 'jsonp'
+                    }).success(function(data) {
+                        $scope.attributes.push_back({});
+                    });
+                }
+            }
+
             function init() {
                 camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 1, 3000);
                 camera.position.z = 50;
-                controls = new THREE.TrackballControls(camera);
+                controls = new THREE.OrbitControls(camera, document.getElementById('canvas'));
 
                 geometry = new THREE.BufferGeometry();
                 addGeometryAttributes(geometry);
                 geometry.computeBoundingSphere();
+                geometry.computeVertexNormals(true);
 
                 scene = new THREE.Scene();
-                mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
+                mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
                             color: 0xf47321,
-                            wireframe: true,
                             side: THREE.DoubleSide}));
                 scene.add(mesh);
-                //addLighting(scene);
+                addLighting(scene);
 
                 renderer = new THREE.WebGLRenderer({
                         antialias: true
                 });
                 renderer.setSize(window.innerWidth, window.innerHeight);
-                container = document.getElementById('container')
-                container.appendChild(renderer.domElement);
-                
+                container = document.getElementById('container');
+                document.getElementById('canvas').appendChild(renderer.domElement);
+
                 stats = new Stats();
                 stats.domElement.style.position = 'absolute';
                 stats.domElement.style.top = '0px';
                 container.appendChild(stats.domElement);
+
+                info = document.getElementById('info');
+                info.style.position = 'absolute';
+                info.style.top = '10px';
+                info.style.width = '100%';
+                info.style.textAlign = 'center';
 
                 window.addEventListener('resize', onWindowResize, false);
             }
@@ -123,5 +168,14 @@
                 renderer.setSize(window.innerWidth, window.innerHeight);
             }
         </script>
+    </head>
+    <body>
+        <div id="container">
+            <div id="canvas"></div>
+            <div id="info" ng-controller="ngAttributeController">
+                <a href ng-click='refreshAttribute()'>Refresh Attributes</a><br>
+                <select ng-model='attribute' ng-options='it.label for it in attributes'></select>
+            </div>
+        </div>
     </body>
 </html>
