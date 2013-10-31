@@ -8,14 +8,23 @@
         <script src="http://web.engr.oregonstate.edu/~ratanasv/threejs/build/three.js"></script>
         <script src="http://web.engr.oregonstate.edu/~ratanasv/threejs/examples/js/libs/stats.min.js"></script>
         <script src="http://web.engr.oregonstate.edu/~ratanasv/threejs/examples/js/controls/OrbitControls.js"></script>
+        
+    </head>
+    <body>
+        <div id="container">
+            <div id="canvas"></div>
+            <div id="info" ng-controller="ngInfoController">
+                <select ng-model='dataFileName' ng-options='it.label for it in dataFileNames'></select><br>
+                <select ng-model='attribute' ng-options='it.label for it in attributes'></select><br>
+            </div>
+        </div>
         <script>
             var servisHost = 'http://54.200.144.27:8888';
             var container, stats, info;
             var camera, scene, renderer, controls;
             var mesh, geometry;
-            var data;
+            var vbos;
 
-            getData();
 
             function getData() {
                 var queryObject = {
@@ -23,47 +32,33 @@
                     fileName: 'easternOregon'
                 };
                 var callback = function(res) {
-                    data = res;
-                    init();
-                    animate();
+                    vbos = res;
+                    initScene();
                 };
                 makeServisRequest(queryObject, callback);
             }
 
             function addGeometryAttributes(geometry) {
-                var pos, indices;
-
-                geometry.addAttribute('index', Uint16Array, data.indices.length, 1);
-                geometry.addAttribute('position', Float32Array, data.vertices.length, 3);
-                ind = geometry.attributes.index.array;
-                pos = geometry.attributes.position.array;
-                for (var i=0; i<data.indices.length; i++) {
-                    ind[i] = data.indices[i];
+                var face;
+                var greyColor = new THREE.Color();
+                greyColor.r = 0.5; greyColor.g = 0.5; greyColor.b = 0.5;
+                geometry.dynamic = true;
+                for (var i=0; i<vbos.indices.length/3; i++) {
+                    var face = new THREE.Face3(vbos.indices[3*i+0], vbos.indices[3*i+1], vbos.indices[3*i+2]);
+                    face.color = greyColor;
+                    geometry.faces.push(face);
                 }
-                for (var i=0; i<data.vertices.length; i++) {
-                    pos[3*i+0] = data.vertices[i].x;
-                    pos[3*i+1] = data.vertices[i].y;
-                    pos[3*i+2] = data.vertices[i].z;
+                for (var i=0; i<vbos.vertices.length; i++) {
+                    geometry.vertices.push(
+                        new THREE.Vector3(vbos.vertices[i].x, vbos.vertices[i].y, vbos.vertices[i].z));
                 }
-                /*
-                ind[0] = 0; ind[1] = 1; ind[2] = 2;
-                pos[0] = 10.0; pos[1] = -10.0; pos[2] = 0.0;
-                pos[3] = 0.0; pos[4] = 10.0; pos[5] = 0.0;
-                pos[6] = -10.0; pos[7]= -10.0; pos[8] = 0.0;*/
-                geometry.offsets = [];
-                geometry.offsets.push({
-                    start: 0,
-                    index: 0,
-                    count: data.indices.length
-                });
-
             }
 
             function addLighting(scene) {
-                var light0 = new THREE.PointLight(0xff0040, 1.0, 0.0);
+                var light0 = new THREE.PointLight(0xffffff, 1.0, 0.0);
                 scene.add(light0);
                 light0.position.x = 0.0;
-                light0.position.y = 500.0;
+                light0.position.y = 200.0;
                 light0.position.z = 0.0;
             }
 
@@ -76,64 +71,116 @@
                 });
             }
 
-            function ngAttributeController($scope, $http) {
-                $scope.attributes = [{
-                    label: 'none'
-                }];
-                $scope.attribute = $scope.attributes[0];
+            function makeServisRequestNG($http, params, callback) {
+                params.callback = 'JSON_CALLBACK';
+                $http.jsonp(servisHost, {
+                    params: params
+                }).success(callback);
+            };
 
-                /*$scope.refreshAttribute = function() {
-                    var queryObject = {
-                        method: 'getAttributes',
-                        fileName: 'easternOregon'
+            function ngInfoController($scope, $http) {
+                var i;
+
+                $scope.attributes = [];
+                $scope.attribute = {label: ''};
+                $scope.dataFileNames = [];
+                $scope.dataFileName = {label:''};
+
+                $scope.$watch('attribute', function(newValue, oldValue) {
+                    var params = {
+                        method: 'getColor',
+                        fileName: $scope.dataFileName.label,
+                        attribute: newValue.label
                     };
-                    var callback = function(res) {
-                        $scope.attributes = [];
-                        for (var i=0; i<res.length; i++) {
-                            $scope.attributes.push({
-                                label: res[i]
-                            });
-                        }
-                        $scope.attribute = $scope.attributes[0];
+                    if (oldValue.label != newValue.label && newValue.label != '') {
+                        makeServisRequestNG($http, params, function(data) {
+                            var i, color, vertexIndex;
+                            for (i=0; i<geometry.faces.length; i++) {
+                                vertexIndex = geometry.faces[i].a;
+                                color = new THREE.Color();
+                                color.r = data[vertexIndex].x;
+                                color.g = data[vertexIndex].y;
+                                color.b = data[vertexIndex].z;
+                                geometry.faces[i].color = color;
+                            }
+                            geometry.colorsNeedUpdate = true;
+                        });
                     }
-                    makeServisRequest(queryObject, callback);
-                }*/
+                });
+
+                $scope.$watch('dataFileName', function(newValue, oldValue) {
+                    var params = {
+                        method: 'getTerrain',
+                        fileName: newValue.label
+                    };
+                    if (oldValue.label != newValue.label) {
+                        $scope.refreshAttribute();
+                        makeServisRequestNG($http, params, function(data) {
+                            vbos = data;
+                            initScene();
+                        });
+                    }
+                });
+
                 $scope.refreshAttribute = function() {
-                    $http({
-                        method: 'GET',
-                        url: servisHost,
-                        data: {
-                            method: 'getAttributes',
-                            fileName: 'easternOregon'
-                        },
-                        dataType: 'jsonp'
-                    }).success(function(data) {
-                        $scope.attributes.push_back({});
+                    var params = {
+                        method: 'getAttributes',
+                        fileName: $scope.dataFileName.label
+                    };
+                    makeServisRequestNG($http, params, function(data) {
+                        $scope.attributes = [];
+                        for (i=0; i<data.length; i++) {
+                            $scope.attributes.push({label: data[i]});
+                        }
+                    });
+                };
+                $scope.refreshDataFileName = function() {
+                    var params = {
+                        method: 'getDatasets'
+                    };
+                    makeServisRequestNG($http, params, function(data) {
+                        $scope.dataFileNames = [];
+                        for (i=0; i<data.length; i++) {
+                            $scope.dataFileNames.push({label: data[i]});
+                        }
                     });
                 }
-            }
 
-            function init() {
-                camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 1, 3000);
-                camera.position.z = 50;
-                controls = new THREE.OrbitControls(camera, document.getElementById('canvas'));
+                $scope.refreshDataFileName();
+                initGraphicsEnv();
+                animate();
+            };
 
-                geometry = new THREE.BufferGeometry();
+            function initScene() {
+                geometry = new THREE.Geometry();
                 addGeometryAttributes(geometry);
                 geometry.computeBoundingSphere();
                 geometry.computeVertexNormals(true);
 
                 scene = new THREE.Scene();
                 mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({
-                            color: 0xf47321,
-                            side: THREE.DoubleSide}));
+                    color: 0xaaaaaa,
+                    ambient: 0xaaaaaa,
+                    vertexColors: THREE.VertexColors,
+                    side: THREE.DoubleSide
+                }));
                 scene.add(mesh);
                 addLighting(scene);
 
+                camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 1, 3000);
+                camera.position.z = 50;
+                camera.lookAt(scene.position);
+                controls = new THREE.OrbitControls(camera, document.getElementById('canvas'));
+            }
+
+            function initGraphicsEnv() {
+                var niceFit;
+
                 renderer = new THREE.WebGLRenderer({
-                        antialias: true
+                    antialias: true
                 });
-                renderer.setSize(window.innerWidth, window.innerHeight);
+                niceFit = getNiceCanvasSize();
+                renderer.setSize(niceFit.width, niceFit.height);
                 container = document.getElementById('container');
                 document.getElementById('canvas').appendChild(renderer.domElement);
 
@@ -145,7 +192,7 @@
                 info = document.getElementById('info');
                 info.style.position = 'absolute';
                 info.style.top = '10px';
-                info.style.width = '100%';
+                info.style.width = '90%';
                 info.style.textAlign = 'center';
 
                 window.addEventListener('resize', onWindowResize, false);
@@ -153,29 +200,32 @@
 
             function animate() {
                 requestAnimationFrame(animate);
-                controls.update();
+                if (controls !== undefined) {
+                    controls.update();
+                }
                 render();
                 stats.update();
             }
 
             function render() {
-                renderer.render(scene, camera);
+                if (scene !== undefined) {
+                    renderer.render(scene, camera);
+                }
             }
 
             function onWindowResize() {
-                camera.aspect = window.innerWidth / window.innerHeight;
+                var niceFit = getNiceCanvasSize();
+                camera.aspect = niceFit.width/niceFit.height;
                 camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setSize(niceFit.width, niceFit.height);
+            }
+
+            function getNiceCanvasSize() {
+                return {
+                    width: window.innerWidth-30,
+                    height: window.innerHeight-30
+                };
             }
         </script>
-    </head>
-    <body>
-        <div id="container">
-            <div id="canvas"></div>
-            <div id="info" ng-controller="ngAttributeController">
-                <a href ng-click='refreshAttribute()'>Refresh Attributes</a><br>
-                <select ng-model='attribute' ng-options='it.label for it in attributes'></select>
-            </div>
-        </div>
     </body>
 </html>
