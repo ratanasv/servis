@@ -2,16 +2,37 @@ var thrift = require('thrift');
 var http = require('http');
 var querystring = require('querystring');
 var url = require('url');
-
+var winston = require('winston');
+var colors = require('colors');
 
 var servis_types = require('./gen-nodejs/servis_types.js'),
     VISTAS = require('./gen-nodejs/VISTAS.js');
+
+winston.add(winston.transports.File, {
+    filename: 'servis.log',
+    timestamp: function() {
+        return new Date().toLocaleString();
+    },
+    colorize: false
+});
+winston.remove(winston.transports.Console);
+winston.add(winston.transports.Console, {
+    timestamp: function() {
+        return new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString();
+    },
+    colorize: true
+});
+winston.addColors({
+    info: 'blue',
+    warn: 'yellow',
+    error: 'red'
+});
 
 function getOnThriftCallBack(response, connection, queryString) {
     return function(err, data) {
         var payload;
         if (err) {
-            console.error(err);
+            winston.error(err);
             response.writeHead(500, {"Content-Type": "application/javascript"});
         } else {
             response.writeHead(200, {"Content-Type": "application/javascript"});
@@ -30,12 +51,15 @@ function jsonpHandler(req, res) {
     var onThriftCallBack;
 
     connection.on('error', function(err) {
-        console.error(err);
+        winston.error(err);
         res.writeHead(503, {"Content-Type": "application/javascript"});
         res.end();
     });
     onThriftCallBack = getOnThriftCallBack(res, connection, queryString);
-    console.log(new Date().toLocaleString() + ' ip=' + req.connection.remoteAddress + ' queryString=' + JSON.stringify(queryString));
+    winston.info(JSON.stringify({
+        ip: req.connection.remoteAddress,
+        queryString: queryString
+    }));
 
     switch(queryString.method) {
     case 'getTerrain':
@@ -57,7 +81,7 @@ function jsonpHandler(req, res) {
         client.getDatasets(onThriftCallBack);
         break;
     default:
-        console.log('method:' + queryString.method + ' not supported');
+        winston.warn('method:' + queryString.method + ' not supported');
         res.writeHead(503, {"Content-Type": "application/javascript"});
         res.end();
         connection.end();
