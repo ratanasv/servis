@@ -143,12 +143,12 @@
                         for (i=0; i<data.length; i++) {
                             $scope.dataFileNames.push({label: data[i]});
                         }
+                        initGraphicsEnv();
+                        animate();
                     });
                 }
 
                 $scope.refreshDataFileName();
-                initGraphicsEnv();
-                animate();
             };
 
             function initScene() {
