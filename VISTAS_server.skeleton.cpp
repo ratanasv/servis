@@ -130,8 +130,9 @@ public:
 		// Your implementation goes here
 		printf("getColor %s %s \n", fileName.c_str(), attribute.c_str());
 		auto plugins = getPlugins(fileName);
-		auto vizPlugin = std::tr1::dynamic_pointer_cast<SHP3D>(plugins.second);
+		auto vizPlugin = plugins.second;
 		vizPlugin->SetAttribute(attribute);
+		vizPlugin->Refresh();
 
 		auto shapeMesh = vizPlugin->GetMesh();
 		auto vertexCount = shapeMesh.GetVertexCount();
