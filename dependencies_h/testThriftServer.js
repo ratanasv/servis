@@ -61,7 +61,9 @@ exports['test_getColorC'] = testBoilerPlate('getColor', ['easternOregon', 'LULC_
     assert.equal(64755, data.length);
 });
 
-
+exports['test_ESRIGrid'] = testBoilerPlate('getTerrain', ['chesapeakeBay'], function(assert, data) {
+    assert.notEqual(0, data.vertices.length);
+})
 
 
 
