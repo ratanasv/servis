@@ -71,4 +71,6 @@ exports['test_chesapeakeBay Attributes'] = testBoilerPlate('getAttributes', ['ch
 });
 
 
-
+exports('test_chesapeakeBay Color') = testBoilerPlate('getColor', ['chesapeakeBay'], function(assert, data) {
+    assert.notEqual(-1, data.length);
+})
