@@ -71,6 +71,7 @@ exports['test_chesapeakeBay Attributes'] = testBoilerPlate('getAttributes', ['ch
 });
 
 
-exports('test_chesapeakeBay Color') = testBoilerPlate('getColor', ['chesapeakeBay'], function(assert, data) {
+exports['test_chesapeakeBay Color'] = testBoilerPlate('getColor', ['chesapeakeBay', 'Spatial_VolumetricSoilMoistureLayer'], function(assert, data) {
     assert.notEqual(-1, data.length);
-})
+});
+

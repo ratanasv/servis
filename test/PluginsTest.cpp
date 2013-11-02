@@ -54,6 +54,8 @@ void PluginsTest::testESRIGrid()
 	auto terrainMesh = vizPlugin->GetMesh();
 	CPPUNIT_ASSERT(terrainMesh.GetVertexCount() != 0);
 	CPPUNIT_ASSERT(terrainMesh.GetIndexCount() != 0);
+
+	vizPlugin->SetAttribute("Spatial_VolumetricSoilMoistureLayer");
 }
 
 
