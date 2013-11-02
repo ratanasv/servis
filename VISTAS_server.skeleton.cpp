@@ -4,8 +4,11 @@
 #include "VISTAS.h"
 #include <thrift/protocol/TBinaryProtocol.h>
 #include <thrift/server/TSimpleServer.h>
+#include <thrift/server/TThreadPoolServer.h>
 #include <thrift/transport/TServerSocket.h>
 #include <thrift/transport/TBufferTransports.h>
+#include <thrift/concurrency/PosixThreadFactory.h>
+#include <thrift/concurrency/ThreadManager.h>
 #include <boost/tr1/memory.hpp>
 #include <vistas/vistas.h>
 #include <SHP3D.h>
@@ -29,6 +32,7 @@ using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
 using namespace ::apache::thrift::server;
+using apache::thrift::concurrency::PosixThreadFactory;
 
 using std::tr1::shared_ptr;
 using std::vector;
@@ -37,6 +41,8 @@ using std::set;
 using std::runtime_error;
 using namespace  ::servis;
 using std::pair;
+
+const int NUM_THREADS = 4;
 
 class FindIfExtension {
 private:
@@ -86,6 +92,7 @@ public:
 			vizPlugin.reset(new TerrainPlugin());
 			vizPlugin->SetData(demPlugin.get(), 0); //for DEM
 			vizPlugin->SetData(dataPlugin.get(), 1);
+			vizPlugin->Refresh();
 		}
 		return PluginPair(dataPlugin, vizPlugin);
 	}
@@ -153,18 +160,8 @@ public:
 
 	virtual void getAttributes(std::vector<std::string> & _return, const std::string& fileName) {
 		printf("getAttributes %s \n", fileName.c_str());
-		shared_ptr<VI_DataPlugin> dataPlugin;
-		const VI_Path pathToFile = VI_Path(DATA_PREFIX + VI_String(fileName));
-		auto datasetsList = pathToFile.GetFiles();
-        auto foundFile = find_if(datasetsList.begin(), datasetsList.end(), FindIfExtension(SHP_EXTENSION));
-        if (foundFile != datasetsList.end()) {
-            dataPlugin.reset(new EnvisionDataPlugin());
-        } else {
-            dataPlugin.reset();
-			throw runtime_error("velma plugin not supported");
-        }
-		dataPlugin->Set(*foundFile);
-		auto attributeList = dataPlugin->GetAttributes();
+		auto plugins = getPlugins(fileName);
+		auto attributeList = plugins.first->GetAttributes();
 		_return.insert(_return.begin(), attributeList.begin(), attributeList.end());
 	}
 
@@ -191,7 +188,11 @@ int main(int argc, char **argv) {
 #endif
 	shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
-	TSimpleServer server(processor, serverTransport, transportFactory, protocolFactory);
+	shared_ptr<ThreadManager> threadManager = ThreadManager::newSimpleThreadManager(NUM_THREADS);
+	shared_ptr<PosixThreadFactory> threadFactory(new PosixThreadFactory());
+	threadManager->threadFactory(threadFactory);
+	threadManager->start();
+	TThreadPoolServer server(processor, serverTransport, transportFactory, protocolFactory, threadManager);
 	server.serve();
 	return 0;
 }

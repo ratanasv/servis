@@ -63,7 +63,12 @@ exports['test_getColorC'] = testBoilerPlate('getColor', ['easternOregon', 'LULC_
 
 exports['test_ESRIGrid'] = testBoilerPlate('getTerrain', ['chesapeakeBay'], function(assert, data) {
     assert.notEqual(0, data.vertices.length);
-})
+    assert.notEqual(0, data.indices.length);
+});
+
+exports['test_chesapeakeBay Attributes'] = testBoilerPlate('getAttributes', ['chesapeakeBay'], function(assert, data) {
+    assert.notEqual(-1, _.indexOf(data, 'Spatial_VolumetricSoilMoistureLayer'));
+});
 
 
 

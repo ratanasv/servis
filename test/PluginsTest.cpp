@@ -38,10 +38,12 @@ void PluginsTest::testESRIGrid()
 {
 	shared_ptr<VI_DataPlugin> dataPlugin(new ESRIGridPlugin());
 	const VI_Path pathToData(DATA_PREFIX + VI_String("chesapeakeBay/Spatial_VolumetricSoilMoistureLayer_1_3_2003_1.asc"));
+	CPPUNIT_ASSERT(pathToData.Exists());
 	dataPlugin->Set(pathToData);
 
 	shared_ptr<VI_DataPlugin> demPlugin(new ESRIGridPlugin());
 	const VI_Path pathToDEM(DATA_PREFIX + VI_String("chesapeakeBay/Chesapeake_10mDEM.asc"));
+	CPPUNIT_ASSERT(pathToDEM.Exists());
 	demPlugin->Set(pathToDEM);
 
 	shared_ptr<VI_VizPlugin3D> vizPlugin(new TerrainPlugin());
