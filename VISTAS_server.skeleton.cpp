@@ -110,11 +110,7 @@ int main(int argc, char **argv) {
 	shared_ptr<VISTASHandler> handler(new VISTASHandler());
 	shared_ptr<TProcessor> processor(new VISTASProcessor(handler));
 	shared_ptr<TServerTransport> serverTransport(new TServerSocket(port));
-#ifdef MACOSX
 	shared_ptr<TTransportFactory> transportFactory(new TBufferedTransportFactory());
-#else
-	shared_ptr<TTransportFactory> transportFactory(new TFramedTransportFactory());
-#endif
 	shared_ptr<TProtocolFactory> protocolFactory(new TBinaryProtocolFactory());
 
 	shared_ptr<ThreadManager> threadManager = ThreadManager::newSimpleThreadManager(NUM_THREADS);
