@@ -10,23 +10,14 @@
 #include <thrift/concurrency/PosixThreadFactory.h>
 #include <thrift/concurrency/ThreadManager.h>
 #include <boost/tr1/memory.hpp>
-#include <vistas/vistas.h>
-#include <SHP3D.h>
-#include <Envision.h>
-#include <ESRIGridASCII.h>
-#include <TerrainAndColor.h>
+#include "vistasServer.h"
+
 #include <vector>
 #include <stdexcept>
 #include <algorithm>
-#include <set>
 
-#ifdef MACOSX
-const VI_String DATA_PREFIX = VI_String("/Users/ratanasv/Documents/data/");
-#else
-const VI_String DATA_PREFIX = VI_String("/home/ubuntu/data/");
-#endif
-const VI_String SHP_EXTENSION = VI_String("shp");
-const VI_String ESRIGRIDASCII_EXTENSION = VI_String("asc");
+
+
 
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
@@ -34,80 +25,24 @@ using namespace ::apache::thrift::transport;
 using namespace ::apache::thrift::server;
 using apache::thrift::concurrency::PosixThreadFactory;
 
-using std::tr1::shared_ptr;
-using std::vector;
-using std::find_if;
-using std::set;
 using std::runtime_error;
 using namespace  ::servis;
-using std::pair;
 
 const int NUM_THREADS = 4;
-
-class FindIfExtension {
-private:
-    const VI_String extension;
-public:
-    FindIfExtension(const VI_String& in) : extension(in) {};
-    bool operator() (const VI_Path& element) {
-        return element.GetExtension() == extension;
-    }
-};
 
 
 class VISTASHandler : virtual public VISTASIf {
 public:
-	typedef pair<shared_ptr<VI_DataPlugin>, shared_ptr<VI_VizPlugin3D>> PluginPair;
-	VISTASHandler() {
-		// Your initialization goes here
-	}
+	virtual void getTerrain(Terrain& _return, const std::string& folderName) {
+		printf("getTerrain %s \n", folderName.c_str());
+		auto shapeMesh = getMesh(folderName);
 
-	PluginPair getPlugins(const std::string& fileName) {
-		shared_ptr<VI_DataPlugin> dataPlugin;
-		shared_ptr<VI_VizPlugin3D> vizPlugin;
-		const VI_Path pathToFile = VI_Path(DATA_PREFIX + VI_String(fileName));
-		auto datasetsList = pathToFile.GetFiles();
-		auto foundFile = find_if(datasetsList.begin(), datasetsList.end(), FindIfExtension(SHP_EXTENSION));
-		if (foundFile != datasetsList.end()) {
-			
-			dataPlugin.reset(new EnvisionDataPlugin());
-			dataPlugin->Set(*foundFile);
-			vizPlugin.reset(new SHP3D());
-			vizPlugin->SetData(dataPlugin.get(), 0);
-		} else {
-			foundFile = find_if(datasetsList.begin(), datasetsList.end(), [](const VI_Path& path) {
-				bool isDEM = path.GetElement(-1).Find(VI_String("DEM")) != -1;
-				return path.GetExtension() == ESRIGRIDASCII_EXTENSION && !isDEM;
-			});
-			dataPlugin.reset(new ESRIGridPlugin());
-			dataPlugin->Set(*foundFile);
-			
-			auto demFile = find_if(datasetsList.begin(), datasetsList.end(), [](const VI_Path& path) {
-				bool isDEM = path.GetElement(-1).Find(VI_String("DEM")) != -1;
-				return path.GetExtension() == ESRIGRIDASCII_EXTENSION && isDEM;
-			});
-			shared_ptr<VI_DataPlugin> demPlugin(new ESRIGridPlugin());
-			demPlugin->Set(*demFile);
-
-			vizPlugin.reset(new TerrainPlugin());
-			vizPlugin->SetData(demPlugin.get(), 0); //for DEM
-			vizPlugin->SetData(dataPlugin.get(), 1);
-			vizPlugin->Refresh();
-		}
-		return PluginPair(dataPlugin, vizPlugin);
-	}
-
-	virtual void getTerrain(Terrain& _return, const std::string& fileName) {
-		// Your implementation goes here
-		printf("getTerrain %s\n", fileName.c_str());
-		auto plugins = getPlugins(fileName);
-		auto vizPlugin = plugins.second;
-		auto dataPlugin = plugins.first;
-		auto shapeMesh = vizPlugin->GetMesh();
 		auto vertexCount = shapeMesh.GetVertexCount();
 		auto indexCount = shapeMesh.GetIndexCount();
 
 		_return.vertices.reserve(vertexCount);
+		_return.indices.reserve(indexCount);
+
 		float* vertexPtr = shapeMesh.AcquireVertexArray();
 		for (int i=0; i<vertexCount; i++) {
 			double x = (double)vertexPtr[3*i+0];
@@ -117,24 +52,17 @@ public:
 		}
 		shapeMesh.ReleaseVertexArray();
 
-
-		_return.indices.reserve(indexCount);
-		unsigned* indexPtr = shapeMesh.AcquireIndexArray();
+		unsigned* indexPtr = shapeMesh.AcquireIndexArray(); 
 		for (int i=0; i<indexCount; i++) {
-			_return.indices.push_back((int32_t) indexPtr[i]);
+			_return.indices.push_back((int)indexPtr[i]);
 		}
-		shapeMesh.ReleaseIndexArray();
 	}
 
-	virtual void getColor(std::vector<V3> & _return, const std::string& fileName, const std::string& attribute) {
-		// Your implementation goes here
-		printf("getColor %s %s \n", fileName.c_str(), attribute.c_str());
-		auto plugins = getPlugins(fileName);
-		auto vizPlugin = plugins.second;
-		vizPlugin->SetAttribute(attribute);
-		vizPlugin->Refresh();
-
-		auto shapeMesh = vizPlugin->GetMesh();
+	virtual void getColor(std::vector<V3> & _return, const std::string& folderName, const std::string& attribute) {
+		printf("getColor %s %s \n", folderName.c_str(), attribute.c_str());
+		
+		auto shapeMesh = getMesh(folderName, attribute);
+		
 		auto vertexCount = shapeMesh.GetVertexCount();
 
 		_return.reserve(vertexCount);
@@ -159,16 +87,16 @@ public:
 		printf("getTextureMap\n %s %s", fileName.c_str(), attribute.c_str());
 	}
 
-	virtual void getAttributes(std::vector<std::string> & _return, const std::string& fileName) {
-		printf("getAttributes %s \n", fileName.c_str());
-		auto plugins = getPlugins(fileName);
-		auto attributeList = plugins.first->GetAttributes();
+	virtual void getAttributes(std::vector<std::string> & _return, const std::string& folderName) {
+		printf("getAttributes %s \n", folderName.c_str());
+		auto dataPlugin = initDataPlugin(folderName);
+		auto attributeList = dataPlugin->GetAttributes();
 		_return.insert(_return.begin(), attributeList.begin(), attributeList.end());
 	}
 
 	virtual void getDatasets(std::vector<std::string> & _return) {
 		printf("getDatasets\n");
-		VI_Path datasetsRoot(DATA_PREFIX);
+		VI_Path datasetsRoot(getDataRoot());
 		auto datasetsList = datasetsRoot.GetFiles();
 		for (auto it : datasetsList) {
 			_return.push_back(it.GetElement(-1).c_str());

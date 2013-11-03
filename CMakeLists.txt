@@ -27,6 +27,7 @@ add_subdirectory(test)
 
 file(GLOB SOURCES *.cpp *.h)
 add_executable(servis ${SOURCES})
+add_library(servisLibForTesting ${SOURCES})
 
 find_package(Threads REQUIRED)
 
