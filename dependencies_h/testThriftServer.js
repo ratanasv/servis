@@ -62,8 +62,8 @@ exports['test_getColorC'] = testBoilerPlate('getColor', ['easternOregon', 'LULC_
 });
 
 exports['test_ESRIGrid'] = testBoilerPlate('getTerrain', ['chesapeakeBay'], function(assert, data) {
-    assert.notEqual(0, data.vertices.length);
-    assert.notEqual(0, data.indices.length);
+    assert.equal(49815, data.vertices.length);
+    assert.equal(33478, data.indices.length);
 });
 
 exports['test_chesapeakeBay Attributes'] = testBoilerPlate('getAttributes', ['chesapeakeBay'], function(assert, data) {
@@ -72,6 +72,6 @@ exports['test_chesapeakeBay Attributes'] = testBoilerPlate('getAttributes', ['ch
 
 
 exports['test_chesapeakeBay Color'] = testBoilerPlate('getColor', ['chesapeakeBay', 'Spatial_VolumetricSoilMoistureLayer'], function(assert, data) {
-    assert.notEqual(-1, data.length);
+    assert.equal(49815, data.length);
 });
 

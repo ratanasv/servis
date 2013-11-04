@@ -18,7 +18,6 @@
 
 
 
-
 using namespace ::apache::thrift;
 using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
@@ -43,6 +42,7 @@ public:
 		_return.vertices.reserve(vertexCount);
 		_return.indices.reserve(indexCount);
 
+		lock_guard<recursive_mutex> critical_graphics(viGetLock());
 		float* vertexPtr = shapeMesh.AcquireVertexArray();
 		for (int i=0; i<vertexCount; i++) {
 			double x = (double)vertexPtr[3*i+0];
@@ -56,6 +56,7 @@ public:
 		for (int i=0; i<indexCount; i++) {
 			_return.indices.push_back((int)indexPtr[i]);
 		}
+
 	}
 
 	virtual void getColor(std::vector<V3> & _return, const std::string& folderName, const std::string& attribute) {
@@ -66,6 +67,7 @@ public:
 		auto vertexCount = shapeMesh.GetVertexCount();
 
 		_return.reserve(vertexCount);
+		lock_guard<recursive_mutex> critical_graphics(viGetLock());
 		float* colorPtr = shapeMesh.AcquireColorArray();
 		for (int i=0; i<vertexCount; i++) {
 			double x = (double)colorPtr[3*i+0];
@@ -74,7 +76,6 @@ public:
 			_return.push_back(V3(x,y,z));
 		}
 		shapeMesh.ReleaseColorArray();
-
 	}
 
 	virtual void getNormalMap(Texture& _return, const std::string& fileName) {

@@ -10,4 +10,6 @@ target_link_libraries(test ENVISION)
 target_link_libraries(test TANDC)
 target_link_libraries(test ESRIGRID)
 target_link_libraries(test servisLibForTesting)
+target_link_libraries(test ${Boost_LIBRARIES})
+
 

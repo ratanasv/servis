@@ -86,8 +86,8 @@ void PluginsTest::testGetMeshAttribute() {
 	shapeMesh.ReleaseColorArray();
 
 	shapeMesh = getMesh("chesapeakeBay", "Spatial_VolumetricSoilMoistureLayer");
-	CPPUNIT_ASSERT(0 != shapeMesh.GetVertexCount());
-	CPPUNIT_ASSERT(0 != shapeMesh.GetIndexCount());
+	CPPUNIT_ASSERT_EQUAL((unsigned)49815, shapeMesh.GetVertexCount());
+	CPPUNIT_ASSERT_EQUAL((unsigned)33478, shapeMesh.GetIndexCount());
 	CPPUNIT_ASSERT(NULL != shapeMesh.AcquireColorArray());
 	shapeMesh.ReleaseColorArray();
 }
