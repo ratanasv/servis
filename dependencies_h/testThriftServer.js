@@ -63,7 +63,7 @@ exports['test_getColorC'] = testBoilerPlate('getColor', ['easternOregon', 'LULC_
 
 exports['test_ESRIGrid'] = testBoilerPlate('getTerrain', ['chesapeakeBay'], function(assert, data) {
     assert.equal(49815, data.vertices.length);
-    assert.equal(33478, data.indices.length);
+    assert.equal(99687, data.indices.length);
 });
 
 exports['test_chesapeakeBay Attributes'] = testBoilerPlate('getAttributes', ['chesapeakeBay'], function(assert, data) {
