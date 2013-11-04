@@ -36,7 +36,7 @@ function testBoilerPlate(test, args, verify) {
 }
 
 exports['test_getDatasets'] = testBoilerPlate('getDatasets', [], function(assert, data) {
-    assert.ok(arrays_equal(data.sort(), ['easternOregon', 'eugene', 'chesapeakeBay'].sort()));
+    assert.ok(arrays_equal(data.sort(), ['easternOregon', 'chesapeakeBay'].sort()));
 });
 
 exports['test_getAttributes'] = testBoilerPlate('getAttributes', ['easternOregon'], function(assert, data){
