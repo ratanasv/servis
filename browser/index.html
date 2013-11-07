@@ -55,11 +55,9 @@
             }
 
             function addLighting(scene) {
-                var light0 = new THREE.PointLight(0xffffff, 1.0, 0.0);
-                scene.add(light0);
-                light0.position.x = 0.0;
-                light0.position.y = 200.0;
-                light0.position.z = 0.0;
+                var directionalLight = new THREE.DirectionalLight(0xffffff);
+                directionalLight.position.set(1,1,1).normalize();
+                scene.add(directionalLight);
             }
 
             function makeServisRequest(query, callback) {
@@ -167,7 +165,7 @@
                 scene.add(mesh);
                 addLighting(scene);
 
-                camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 1, 3000);
+                camera = new THREE.PerspectiveCamera(45, window.innerWidth/window.innerHeight, 1, 5000);
                 camera.position.z = 50;
                 camera.lookAt(scene.position);
                 controls = new THREE.OrbitControls(camera, document.getElementById('canvas'));
